@@ -18,9 +18,7 @@ public class RetrofitClient {
     static {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         logging.setLevel(HttpLoggingInterceptor.Level.BASIC);
-
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
-
         httpClient.addNetworkInterceptor(new Interceptor() {
             @Override
             public Response intercept(Chain chain) throws IOException {

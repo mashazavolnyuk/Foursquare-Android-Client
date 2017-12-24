@@ -6,13 +6,22 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.telecom.Call;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.mashazavolnyuk.client.R;
+import com.mashazavolnyuk.client.api.RetrofitClient;
+import com.mashazavolnyuk.client.api.requests.IRequestListPlaces;
 import com.mashazavolnyuk.client.location.ILocationSubsriber;
 import com.mashazavolnyuk.client.location.PersonalLocationListener;
+
+import okhttp3.Response;
+import retrofit2.Callback;
+import retrofit2.Retrofit;
 
 public class MainListFragment extends BaseFragment implements ILocationSubsriber {
 
@@ -57,6 +66,7 @@ public class MainListFragment extends BaseFragment implements ILocationSubsriber
     @Override
     public void changeData(double latitude, double longitude) {
         showToast("" + latitude + "" + longitude);
+        testRequest(latitude, longitude);
     }
 
     @Override
@@ -67,5 +77,21 @@ public class MainListFragment extends BaseFragment implements ILocationSubsriber
     @Override
     public void providerEnabled(String s) {
         showToast("" + s);
+    }
+
+    private void testRequest(double latitude, double longitude) {
+        IRequestListPlaces iRequestListPlaces = RetrofitClient.getRetrofit().create(IRequestListPlaces.class);
+        String id = getString(R.string.foursquare_client_id);
+        String secret = getString(R.string.foursquare_client_secret);
+        iRequestListPlaces.getListPlaces(id, secret, "44.3,37.2").enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(retrofit2.Call<String> call, retrofit2.Response<String> response) {
+            }
+
+            @Override
+            public void onFailure(retrofit2.Call<String> call, Throwable t) {
+
+            }
+        });
     }
 }
