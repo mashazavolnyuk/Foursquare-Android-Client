@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.mashazavolnyuk.client.MainActivity;
 import com.mashazavolnyuk.client.R;
 import com.mashazavolnyuk.client.adapters.ListPlacesAdapter;
 import com.mashazavolnyuk.client.api.RetrofitClient;
@@ -33,6 +34,7 @@ import retrofit2.Callback;
 public class MainListFragment extends BaseFragment implements ILocationSubsriber, SearchView.OnQueryTextListener {
 
     RecyclerView listPlaces;
+    PersonalLocationListener locationListener;
 
     @Nullable
     @Override
@@ -42,7 +44,8 @@ public class MainListFragment extends BaseFragment implements ILocationSubsriber
         listPlaces = view.findViewById(R.id.listPlaces);
         setHasOptionsMenu(true);
         requestNecessaryPermissions();
-        PersonalLocationListener.SetUpLocationListener(getActivity(), this);
+        locationListener = new PersonalLocationListener();
+        locationListener.SetUpLocationListener(getActivity(), this);
         return view;
     }
 
@@ -75,27 +78,14 @@ public class MainListFragment extends BaseFragment implements ILocationSubsriber
                 return false;
             }
         });
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                // use this method when query submitted
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                // use this method for auto complete search process
-                return false;
-            }
-        });
+        searchView.setOnQueryTextListener(this);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_filter:
-                showToast("filter press");
+                ((MainActivity)(getActivity())).goToFilter();
                 return true;
             default:
                 break;
@@ -125,6 +115,7 @@ public class MainListFragment extends BaseFragment implements ILocationSubsriber
     @Override
     public void changeData(double latitude, double longitude) {
         showToast("" + latitude + "" + longitude);
+        locationListener.stop();
         testRequest(latitude, longitude);
     }
 

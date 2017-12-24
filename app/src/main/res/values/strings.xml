@@ -5,4 +5,15 @@
     <string name="contentDescription">Building</string>
     <string name="search_text">Search</string>
     <string name="filter_text">Filter</string>
+    <string name="sort_by">Sort By</string>
+    <string name="filter_by">Filter By</string>
+    <string name="search_there">Search there</string>
+    
+    <string name="price_1">$</string>
+    <string name="price_2">$$</string>
+    <string name="price_3">$$$</string>
+    <string name="price_4">$$$$</string>
+    <string name="distance">Distance</string>
+    <string name="relevance">Relevance</string>
+    <string name="select_place_and_radius">Select Place And Radius</string>
 </resources>

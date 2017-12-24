@@ -13,11 +13,12 @@ public class PersonalLocationListener implements LocationListener {
 
     private static Location location; // здесь будет всегда доступна самая последняя информация о местоположении пользователя.
     private static ILocationSubsriber sILocationSubsriber;
+    private static LocationManager locationManager;
 
-    public static void SetUpLocationListener(Context context, ILocationSubsriber iLocationSubsriber) // это нужно запустить в самом начале работы программы
+    public void SetUpLocationListener(Context context, ILocationSubsriber iLocationSubsriber) // это нужно запустить в самом начале работы программы
     {
         sILocationSubsriber = iLocationSubsriber;
-        LocationManager locationManager = (LocationManager)
+        locationManager = (LocationManager)
                 context.getSystemService(Context.LOCATION_SERVICE);
 
         LocationListener locationListener = new PersonalLocationListener();
@@ -37,6 +38,11 @@ public class PersonalLocationListener implements LocationListener {
         if (locationManager != null) {
             location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         }
+    }
+
+    public void stop() {
+        locationManager.removeUpdates(this);
+        location = null;
     }
 
     @Override
