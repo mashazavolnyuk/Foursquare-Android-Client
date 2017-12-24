@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import com.mashazavolnyuk.client.fragments.AboutSelectedPlaceFragment;
 import com.mashazavolnyuk.client.fragments.FilterFragment;
 import com.mashazavolnyuk.client.fragments.MainListFragment;
 import com.mashazavolnyuk.client.fragments.MapFragment;
@@ -14,7 +15,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        goToListPlaces();
+        goToAboutSelectedPlace();
     }
 
     public void goToListPlaces() {
@@ -27,6 +28,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void goToMap(){
         goToFragment(new MapFragment());
+    }
+    public void goToAboutSelectedPlace(){
+        goToFragment(new AboutSelectedPlaceFragment());
     }
     private void goToFragment(Fragment fragment) {
         getFragmentManager().beginTransaction().replace(R.id.content, fragment)

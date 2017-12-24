@@ -12,8 +12,13 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitClient {
 
-    private static final String BASE_URL = "https://api.foursquare.com/v2/";
+    private static String BASE_URL = "https://api.foursquare.com/v2/";
     private static Retrofit retrofit = null;
+
+    private static Retrofit.Builder builder =
+            new Retrofit.Builder()
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .baseUrl(BASE_URL);
 
     static {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
@@ -32,10 +37,19 @@ public class RetrofitClient {
             }
         }).addInterceptor(logging);
 
-        Retrofit.Builder builder = new retrofit2.Retrofit.Builder().
+        builder = new retrofit2.Retrofit.Builder().
                 baseUrl(BASE_URL).
                 client(httpClient.build()).
                 addConverterFactory(GsonConverterFactory.create());
+        retrofit = builder.build();
+    }
+
+    public static void changeApiBaseUrl(String newApiBaseUrl) {
+        BASE_URL = newApiBaseUrl;
+
+        builder = new Retrofit.Builder()
+                .addConverterFactory(GsonConverterFactory.create())
+                .baseUrl(BASE_URL);
         retrofit = builder.build();
     }
 

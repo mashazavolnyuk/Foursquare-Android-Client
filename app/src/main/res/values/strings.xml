@@ -18,4 +18,5 @@
     <string name="select_place_and_radius">Select Place And Radius</string>
     <string name="map_Key">AIzaSyDMofTdX08zRW6ldhaPiCPhA6tz5dz_PVQ</string>
     <string name="google_map">Google map</string>
+    <string name="selected_place">selected place</string>
 </resources>
