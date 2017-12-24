@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import com.mashazavolnyuk.client.fragments.FilterFragment;
 import com.mashazavolnyuk.client.fragments.MainListFragment;
+import com.mashazavolnyuk.client.fragments.MapFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -24,6 +25,9 @@ public class MainActivity extends AppCompatActivity {
         goToFragment(new FilterFragment());
     }
 
+    public void goToMap(){
+        goToFragment(new MapFragment());
+    }
     private void goToFragment(Fragment fragment) {
         getFragmentManager().beginTransaction().replace(R.id.content, fragment)
                 .addToBackStack(fragment.getTag()).commit();
