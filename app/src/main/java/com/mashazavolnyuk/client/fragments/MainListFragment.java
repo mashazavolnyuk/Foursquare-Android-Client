@@ -6,31 +6,35 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.telecom.Call;
-import android.util.Log;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.mashazavolnyuk.client.R;
+import com.mashazavolnyuk.client.adapters.ListPlacesAdapter;
 import com.mashazavolnyuk.client.api.RetrofitClient;
 import com.mashazavolnyuk.client.api.requests.IRequestListPlaces;
 import com.mashazavolnyuk.client.data.Data;
+import com.mashazavolnyuk.client.data.Venue;
 import com.mashazavolnyuk.client.location.ILocationSubsriber;
 import com.mashazavolnyuk.client.location.PersonalLocationListener;
 
-import okhttp3.Response;
+import java.util.List;
 import retrofit2.Callback;
-import retrofit2.Retrofit;
+
 
 public class MainListFragment extends BaseFragment implements ILocationSubsriber {
+
+    RecyclerView listPlaces;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main_list, container, false);
+        listPlaces= view.findViewById(R.id.listPlaces);
         requestNecessaryPermissions();
         PersonalLocationListener.SetUpLocationListener(getActivity(), this);
         return view;
@@ -88,6 +92,7 @@ public class MainListFragment extends BaseFragment implements ILocationSubsriber
             @Override
             public void onResponse(retrofit2.Call<Data> call, retrofit2.Response<Data> response) {
                 Data data = response.body();
+                fillData(data.getResponse().getVenues());
             }
 
             @Override
@@ -95,5 +100,11 @@ public class MainListFragment extends BaseFragment implements ILocationSubsriber
 
             }
         });
+    }
+
+    private void fillData(List<Venue> venues){
+        ListPlacesAdapter listPlacesAdapter = new ListPlacesAdapter(getActivity(),venues);
+        listPlaces.setLayoutManager(new LinearLayoutManager(getActivity()));
+        listPlaces.setAdapter(listPlacesAdapter);
     }
 }

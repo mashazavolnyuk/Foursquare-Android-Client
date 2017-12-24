@@ -8,7 +8,7 @@ import retrofit2.http.Query;
 
 public interface IRequestListPlaces {
 
-    @GET("venues/search?v=20182412&limit=1")
+    @GET("venues/search?v=20182412&limit=50")
     Call<Data> getListPlaces(@Query("client_id") String clientID,
                              @Query("client_secret") String clientSecret,
                              @Query("ll")String s);
