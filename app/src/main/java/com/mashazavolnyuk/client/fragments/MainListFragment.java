@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.mashazavolnyuk.client.R;
 import com.mashazavolnyuk.client.api.RetrofitClient;
 import com.mashazavolnyuk.client.api.requests.IRequestListPlaces;
+import com.mashazavolnyuk.client.data.Data;
 import com.mashazavolnyuk.client.location.ILocationSubsriber;
 import com.mashazavolnyuk.client.location.PersonalLocationListener;
 
@@ -83,13 +84,14 @@ public class MainListFragment extends BaseFragment implements ILocationSubsriber
         IRequestListPlaces iRequestListPlaces = RetrofitClient.getRetrofit().create(IRequestListPlaces.class);
         String id = getString(R.string.foursquare_client_id);
         String secret = getString(R.string.foursquare_client_secret);
-        iRequestListPlaces.getListPlaces(id, secret, "44.3,37.2").enqueue(new Callback<String>() {
+        iRequestListPlaces.getListPlaces(id, secret, ""+latitude+","+longitude).enqueue(new Callback<Data>() {
             @Override
-            public void onResponse(retrofit2.Call<String> call, retrofit2.Response<String> response) {
+            public void onResponse(retrofit2.Call<Data> call, retrofit2.Response<Data> response) {
+                Data data = response.body();
             }
 
             @Override
-            public void onFailure(retrofit2.Call<String> call, Throwable t) {
+            public void onFailure(retrofit2.Call<Data> call, Throwable t) {
 
             }
         });
