@@ -3,4 +3,6 @@
     <string name="foursquare_client_id">XCVWHEE4CR51K5UHTEOW1KUU4QT3RKBRZLQMG1ZN0APZPWVR</string>
     <string name="foursquare_client_secret">TJNGAOBUDM1ILMOZJZ5Y02LWJS5SM3QGO55HJMNBEXIYKK0W</string>
     <string name="contentDescription">Building</string>
+    <string name="search_text">Search</string>
+    <string name="filter_text">Filter</string>
 </resources>

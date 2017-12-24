@@ -8,7 +8,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -22,10 +26,11 @@ import com.mashazavolnyuk.client.location.ILocationSubsriber;
 import com.mashazavolnyuk.client.location.PersonalLocationListener;
 
 import java.util.List;
+
 import retrofit2.Callback;
 
 
-public class MainListFragment extends BaseFragment implements ILocationSubsriber {
+public class MainListFragment extends BaseFragment implements ILocationSubsriber, SearchView.OnQueryTextListener {
 
     RecyclerView listPlaces;
 
@@ -34,7 +39,8 @@ public class MainListFragment extends BaseFragment implements ILocationSubsriber
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main_list, container, false);
-        listPlaces= view.findViewById(R.id.listPlaces);
+        listPlaces = view.findViewById(R.id.listPlaces);
+        setHasOptionsMenu(true);
         requestNecessaryPermissions();
         PersonalLocationListener.SetUpLocationListener(getActivity(), this);
         return view;
@@ -48,6 +54,54 @@ public class MainListFragment extends BaseFragment implements ILocationSubsriber
                     Manifest.permission.ACCESS_FINE_LOCATION,
             }, 1);
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.main_menu, menu);
+        final MenuItem item = menu.findItem(R.id.action_search);
+        final SearchView searchView = (SearchView) item.getActionView();
+        searchView.setOnQueryTextListener(this);
+        searchView.setOnSearchClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                //Search View is collapsed
+                return false;
+            }
+        });
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                // use this method when query submitted
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                // use this method for auto complete search process
+                return false;
+            }
+        });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_filter:
+                showToast("filter press");
+                return true;
+            default:
+                break;
+        }
+
+        return false;
     }
 
     @Override
@@ -88,7 +142,7 @@ public class MainListFragment extends BaseFragment implements ILocationSubsriber
         IRequestListPlaces iRequestListPlaces = RetrofitClient.getRetrofit().create(IRequestListPlaces.class);
         String id = getString(R.string.foursquare_client_id);
         String secret = getString(R.string.foursquare_client_secret);
-        iRequestListPlaces.getListPlaces(id, secret, ""+latitude+","+longitude).enqueue(new Callback<Data>() {
+        iRequestListPlaces.getListPlaces(id, secret, "" + latitude + "," + longitude).enqueue(new Callback<Data>() {
             @Override
             public void onResponse(retrofit2.Call<Data> call, retrofit2.Response<Data> response) {
                 Data data = response.body();
@@ -102,9 +156,19 @@ public class MainListFragment extends BaseFragment implements ILocationSubsriber
         });
     }
 
-    private void fillData(List<Venue> venues){
-        ListPlacesAdapter listPlacesAdapter = new ListPlacesAdapter(getActivity(),venues);
+    private void fillData(List<Venue> venues) {
+        ListPlacesAdapter listPlacesAdapter = new ListPlacesAdapter(getActivity(), venues);
         listPlaces.setLayoutManager(new LinearLayoutManager(getActivity()));
         listPlaces.setAdapter(listPlacesAdapter);
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        return false;
     }
 }
