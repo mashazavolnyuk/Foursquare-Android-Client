@@ -30,7 +30,7 @@ public class ListPlaceViewModel extends ViewModel {
             iObserverFinishedLoadingPlace) {
         Log.d(TAG, "loadGroups()");
         ListPlaceRepository listPlaceRepository = new ListPlaceRepository();
-        listPlaceRepository.getProjectList(latitude, longitude, new IObserverListPlacesData() {
+        listPlaceRepository.getListPlaces(latitude, longitude, new IObserverListPlacesData() {
             @Override
             public void newData(LiveData<Data> newDataLiveData) {
                 group.setValue(newDataLiveData.getValue().getResponse().getGroups());

@@ -3,6 +3,7 @@ package com.mashazavolnyuk.client.fragments;
 import android.arch.lifecycle.ViewModelProviders;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
@@ -40,9 +41,11 @@ import retrofit2.Response;
 public class AboutSelectedPlaceFragment extends BaseFragment {
 
     ViewPager viewPager;
-    TextView first;
-    TextView second;
-    TextView third;
+    TextView firstField;
+    TextView secondField;
+    TextView thirdField;
+    TextView textCurrency;
+    TextView rating;
     ImageView imageMap;
     RecyclerView recyclerViewTips;
     Item item;
@@ -54,12 +57,18 @@ public class AboutSelectedPlaceFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_about_selected_place, container, false);
         imageMap = view.findViewById(R.id.imageMapSelectedPlace);
         viewPager = view.findViewById(R.id.pagerGallery);
+        rating = view.findViewById(R.id.rating);
+        firstField = view.findViewById(R.id.firstPositionText);
+        secondField = view.findViewById(R.id.secondPositionText);
+        thirdField = view.findViewById(R.id.thirdPositionText);
+        textCurrency = view.findViewById(R.id.textCurrency);
         DetailAboutPlaceViewModel model = ViewModelProviders.of((FragmentActivity) getActivity()).get(DetailAboutPlaceViewModel.class);
         item = model.getSelected().getValue();
         recyclerViewTips = view.findViewById(R.id.listTips);
         fillTestData(item);
         fillGallery();
         fillListTips();
+        fillAboutPlace();
         return view;
     }
 
@@ -108,5 +117,15 @@ public class AboutSelectedPlaceFragment extends BaseFragment {
         TipsAdapter tipsAdapter = new TipsAdapter(getActivity(), tips);
         recyclerViewTips.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerViewTips.setAdapter(tipsAdapter);
+    }
+
+    private void fillAboutPlace() {
+        Venue venue = item.getVenue();
+        rating.setText(venue.getRating().toString());
+        rating.setBackgroundColor(Color.parseColor("#" + venue.getRatingColor()));
+        firstField.setText(venue.getName());
+        secondField.setText(venue.getCategories().get(0).getPluralName());
+        textCurrency.setText(venue.getPrice().getCurrency());
+
     }
 }
