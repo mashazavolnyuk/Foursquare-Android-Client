@@ -19,4 +19,8 @@
     <string name="map_Key">AIzaSyDMofTdX08zRW6ldhaPiCPhA6tz5dz_PVQ</string>
     <string name="google_map">Google map</string>
     <string name="selected_place">selected place</string>
+    <string name="testtext">testText</string>
+    <string name="gallery">gallery</string>
+    <string name="photouser">photoUser</string>
+    <string name="like">like</string>
 </resources>

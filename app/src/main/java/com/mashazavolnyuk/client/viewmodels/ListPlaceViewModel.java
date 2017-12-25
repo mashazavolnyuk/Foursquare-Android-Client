@@ -5,9 +5,9 @@ import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.util.Log;
 
-import com.mashazavolnyuk.client.IObserverFinishedLoadingPlace;
-import com.mashazavolnyuk.client.IObserverListPlacesData;
-import com.mashazavolnyuk.client.ListPlaceRepository;
+import com.mashazavolnyuk.client.repositories.IObserverFinishedLoadingPlace;
+import com.mashazavolnyuk.client.repositories.IObserverListPlacesData;
+import com.mashazavolnyuk.client.repositories.ListPlaceRepository;
 import com.mashazavolnyuk.client.data.Data;
 import com.mashazavolnyuk.client.data.Group;
 

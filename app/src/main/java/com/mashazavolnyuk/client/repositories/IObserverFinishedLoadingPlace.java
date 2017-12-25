@@ -1,4 +1,4 @@
-package com.mashazavolnyuk.client;
+package com.mashazavolnyuk.client.repositories;
 
 import com.mashazavolnyuk.client.data.Data;
 
