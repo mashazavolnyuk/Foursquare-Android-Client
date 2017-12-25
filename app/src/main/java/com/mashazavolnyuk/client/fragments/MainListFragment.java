@@ -3,6 +3,7 @@ package com.mashazavolnyuk.client.fragments;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -12,7 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -24,26 +25,25 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.mashazavolnyuk.client.MainActivity;
 import com.mashazavolnyuk.client.R;
+import com.mashazavolnyuk.client.adapters.IListPlacesOnClickListener;
 import com.mashazavolnyuk.client.adapters.ListPlacesAdapter;
 import com.mashazavolnyuk.client.api.RetrofitClient;
 import com.mashazavolnyuk.client.api.requests.IRequestListPlaces;
 import com.mashazavolnyuk.client.data.Data;
 import com.mashazavolnyuk.client.data.Group;
+import com.mashazavolnyuk.client.data.Item;
+import com.mashazavolnyuk.client.viewmodels.ListPlacesViewModel;
 
 import retrofit2.Callback;
 
 
-public class MainListFragment extends BaseFragment implements SearchView.OnQueryTextListener {
+public class MainListFragment extends BaseFragment implements SearchView.OnQueryTextListener, IListPlacesOnClickListener {
 
     private static final int LOCATION_REQUEST_CODE = 1;
-    RecyclerView listPlaces;
+    private ListPlacesViewModel model;
+    private RecyclerView listPlaces;
 
     @Nullable
     @Override
@@ -52,27 +52,28 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
         View view = inflater.inflate(R.layout.fragment_main_list, container, false);
         listPlaces = view.findViewById(R.id.listPlaces);
         setHasOptionsMenu(true);
+        model = ViewModelProviders.of((FragmentActivity) getActivity()).get(ListPlacesViewModel.class);
         tryStartFindLocation();
         return view;
     }
 
-    private void tryStartFindLocation(){
+    private void tryStartFindLocation() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             boolean isFineLocationDisabled = false;
             boolean isCoarseLocationDisables = false;
-            if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{
                         Manifest.permission.ACCESS_FINE_LOCATION,
                 }, LOCATION_REQUEST_CODE);
                 isFineLocationDisabled = true;
             }
-            if(ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{
                         Manifest.permission.ACCESS_COARSE_LOCATION,
                 }, LOCATION_REQUEST_CODE);
                 isCoarseLocationDisables = true;
             }
-            if(!isFineLocationDisabled || !isCoarseLocationDisables){
+            if (!isFineLocationDisabled || !isCoarseLocationDisables) {
                 startFindLocation();
             }
         } else {
@@ -81,12 +82,12 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
     }
 
     @SuppressLint("MissingPermission")
-    private void startFindLocation(){
-        LocationManager locationManager = (LocationManager)getActivity().getSystemService(Context.LOCATION_SERVICE);
+    private void startFindLocation() {
+        final LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         LocationListener locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-               testRequest(location.getLatitude(),location.getLongitude());
+                testRequest(location.getLatitude(), location.getLongitude());
             }
 
             @Override
@@ -205,7 +206,7 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
     }
 
     private void fillData(Group groupPlaces) {
-        ListPlacesAdapter listPlacesAdapter = new ListPlacesAdapter(getActivity(), groupPlaces);
+        ListPlacesAdapter listPlacesAdapter = new ListPlacesAdapter(getActivity(), groupPlaces, this);
         listPlaces.setLayoutManager(new LinearLayoutManager(getActivity()));
         listPlaces.setAdapter(listPlacesAdapter);
     }
@@ -218,5 +219,11 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
     @Override
     public boolean onQueryTextChange(String newText) {
         return false;
+    }
+
+    @Override
+    public void setItem(Item item) {
+        model.select(item);
+        ((MainActivity) getActivity()).goToAboutSelectedPlace();
     }
 }

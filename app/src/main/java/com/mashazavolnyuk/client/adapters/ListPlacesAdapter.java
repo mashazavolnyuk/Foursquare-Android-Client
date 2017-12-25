@@ -5,22 +5,19 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import com.mashazavolnyuk.client.R;
 import com.mashazavolnyuk.client.data.Group;
 import com.mashazavolnyuk.client.data.Item;
 import com.mashazavolnyuk.client.data.Item__;
-import com.mashazavolnyuk.client.data.Photos;
 import com.mashazavolnyuk.client.data.Price;
 import com.mashazavolnyuk.client.data.Venue;
 import com.squareup.picasso.Picasso;
 
-import java.util.List;
 import java.util.Locale;
 
 
@@ -28,10 +25,12 @@ public class ListPlacesAdapter extends RecyclerView.Adapter<ListPlacesAdapter.Ho
 
     private Context context;
     private Group groupList;
+    private IListPlacesOnClickListener iListPlacesOnClickListener;
 
-    public ListPlacesAdapter(Context context, Group groupList) {
+    public ListPlacesAdapter(Context context, Group groupList, IListPlacesOnClickListener iListPlacesOnClickListener) {
         this.context = context;
         this.groupList = groupList;
+        this.iListPlacesOnClickListener = iListPlacesOnClickListener;
     }
 
     @Override
@@ -43,7 +42,7 @@ public class ListPlacesAdapter extends RecyclerView.Adapter<ListPlacesAdapter.Ho
 
     @Override
     public void onBindViewHolder(ListPlacesAdapter.HolderAdapter holder, int position) {
-        Item item = groupList.getItems().get(position);
+        final Item item = groupList.getItems().get(position);
         Venue venue = item.getVenue();
         Price price = venue.getPrice();
         String valuePrice = price != null ? price.getCurrency() : "";
@@ -57,15 +56,21 @@ public class ListPlacesAdapter extends RecyclerView.Adapter<ListPlacesAdapter.Ho
         holder.secondPositionText.setText(venue.getCategories().get(0).getName() + "," + valuePrice);
         String kmValue = getStringDistanceByValue(venue.getLocation().getDistance());
         String address = venue.getLocation().getAddress();
-        String valueForThirdPosition = kmValue+","+address;
+        String valueForThirdPosition = kmValue + "," + address;
         holder.thirdPositionText.setText(valueForThirdPosition);
-        holder.rating.setText(String.format("%s",venue.getRating().toString()));
+        holder.rating.setText(String.format("%s", venue.getRating().toString()));
         holder.rating.setBackgroundColor(Color.parseColor("#" + venue.getRatingColor()));
+        holder.root.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                iListPlacesOnClickListener.setItem(item);
+            }
+        });
     }
 
     private String getStringDistanceByValue(Integer value) {
         Double distance = value / 1000.0;
-        return String.format(Locale.ENGLISH,"%.2f km", distance);
+        return String.format(Locale.ENGLISH, "%.2f km", distance);
     }
 
     @Override
@@ -78,14 +83,16 @@ public class ListPlacesAdapter extends RecyclerView.Adapter<ListPlacesAdapter.Ho
     }
 
     class HolderAdapter extends RecyclerView.ViewHolder {
+        LinearLayout root;
         ImageView photoPlace;
         TextView firstPositionText;
         TextView secondPositionText;
         TextView thirdPositionText;
         TextView rating;
 
-        public HolderAdapter(View view) {
+         HolderAdapter(View view) {
             super(view);
+            root = view.findViewById(R.id.rootList);
             photoPlace = view.findViewById(R.id.photoPlace);
             firstPositionText = view.findViewById(R.id.firstPositionText);
             secondPositionText = view.findViewById(R.id.secondPositionText);
