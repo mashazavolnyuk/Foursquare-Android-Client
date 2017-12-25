@@ -4,7 +4,7 @@ import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import com.mashazavolnyuk.client.data.Item;
 
-public class ListPlacesViewModel extends ViewModel {
+public class DetailAboutPlaceViewModel extends ViewModel {
 
     private final MutableLiveData<Item> selected = new MutableLiveData<Item>();
 

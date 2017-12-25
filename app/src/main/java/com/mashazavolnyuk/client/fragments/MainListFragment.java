@@ -3,6 +3,7 @@ package com.mashazavolnyuk.client.fragments;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -25,6 +26,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.mashazavolnyuk.client.IObserverFinishedLoadingPlace;
+import com.mashazavolnyuk.client.IObserverListPlacesData;
 import com.mashazavolnyuk.client.MainActivity;
 import com.mashazavolnyuk.client.R;
 import com.mashazavolnyuk.client.adapters.IListPlacesOnClickListener;
@@ -34,16 +37,22 @@ import com.mashazavolnyuk.client.api.requests.IRequestListPlaces;
 import com.mashazavolnyuk.client.data.Data;
 import com.mashazavolnyuk.client.data.Group;
 import com.mashazavolnyuk.client.data.Item;
-import com.mashazavolnyuk.client.viewmodels.ListPlacesViewModel;
+import com.mashazavolnyuk.client.viewmodels.DetailAboutPlaceViewModel;
+import com.mashazavolnyuk.client.viewmodels.ListPlaceViewModel;
+
+import java.util.List;
 
 import retrofit2.Callback;
 
 
-public class MainListFragment extends BaseFragment implements SearchView.OnQueryTextListener, IListPlacesOnClickListener {
+public class MainListFragment extends BaseFragment implements SearchView.OnQueryTextListener,
+        IListPlacesOnClickListener, LocationListener, IObserverListPlacesData {
 
     private static final int LOCATION_REQUEST_CODE = 1;
-    private ListPlacesViewModel model;
+    private DetailAboutPlaceViewModel detailAboutPlaceViewMode;
+    private ListPlaceViewModel listPlaceViewMode;
     private RecyclerView listPlaces;
+    private LocationManager locationManager;
 
     @Nullable
     @Override
@@ -52,8 +61,16 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
         View view = inflater.inflate(R.layout.fragment_main_list, container, false);
         listPlaces = view.findViewById(R.id.listPlaces);
         setHasOptionsMenu(true);
-        model = ViewModelProviders.of((FragmentActivity) getActivity()).get(ListPlacesViewModel.class);
-        tryStartFindLocation();
+        listPlaceViewMode = ViewModelProviders.of((FragmentActivity) getActivity()).get(
+                ListPlaceViewModel.class);
+        detailAboutPlaceViewMode = ViewModelProviders.of((FragmentActivity) getActivity()).get(
+                DetailAboutPlaceViewModel.class);
+        List<Group> groups = listPlaceViewMode.getCache();
+        if (groups != null) {
+            fillData(groups.get(0));
+        } else {
+            tryStartFindLocation();
+        }
         return view;
     }
 
@@ -61,13 +78,15 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             boolean isFineLocationDisabled = false;
             boolean isCoarseLocationDisables = false;
-            if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(getActivity(),
+                    Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{
                         Manifest.permission.ACCESS_FINE_LOCATION,
                 }, LOCATION_REQUEST_CODE);
                 isFineLocationDisabled = true;
             }
-            if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(getActivity(),
+                    Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{
                         Manifest.permission.ACCESS_COARSE_LOCATION,
                 }, LOCATION_REQUEST_CODE);
@@ -83,33 +102,41 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
 
     @SuppressLint("MissingPermission")
     private void startFindLocation() {
-        final LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-        LocationListener locationListener = new LocationListener() {
+        locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        if (locationManager != null) {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                    100 * 10, 10, this);
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
+                    100 * 10, 10, this);
+        }
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        listPlaceViewMode.loadGroups(location.getLatitude(), location.getLongitude(), new IObserverFinishedLoadingPlace() {
             @Override
-            public void onLocationChanged(Location location) {
-                testRequest(location.getLatitude(), location.getLongitude());
+            public void loadedData(Data data) {
+                fillData(data.getResponse().getGroups().get(0));
             }
+        });
+        locationManager.removeUpdates(this);
+    }
 
-            @Override
-            public void onStatusChanged(String s, int i, Bundle bundle) {
+    @Override
+    public void onStatusChanged(String s, int i, Bundle bundle) {
 
-            }
+    }
 
-            @Override
-            public void onProviderEnabled(String s) {
-                showToast(s);
-            }
+    @Override
+    public void onProviderEnabled(String s) {
 
-            @Override
-            public void onProviderDisabled(String s) {
-                showToast(s);
-            }
-        };
+    }
 
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                100 * 10, 10, locationListener);
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
-                100 * 10, 10, locationListener);
+    @Override
+    public void onProviderDisabled(String s) {
+
+    }
+
 
 //        FusedLocationProviderClient mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
 //        mFusedLocationProviderClient.getLastLocation()
@@ -124,7 +151,7 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
 //                });
 //
 //        Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-    }
+//}
 
 //    private void onLocationUpdate(Location location){
 //        showToast("" + location.getLatitude() + "" + location.getLongitude());
@@ -223,7 +250,12 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
 
     @Override
     public void setItem(Item item) {
-        model.select(item);
+        detailAboutPlaceViewMode.select(item);
         ((MainActivity) getActivity()).goToAboutSelectedPlace();
+    }
+
+    @Override
+    public void newData(LiveData<Data> dataLiveData) {
+
     }
 }
