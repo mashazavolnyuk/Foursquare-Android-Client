@@ -21,6 +21,9 @@ public class Location {
     @SerializedName("distance")
     @Expose
     private Integer distance;
+    @SerializedName("postalCode")
+    @Expose
+    private String postalCode;
     @SerializedName("cc")
     @Expose
     private String cc;
@@ -77,6 +80,14 @@ public class Location {
         this.distance = distance;
     }
 
+    public String getPostalCode() {
+        return postalCode;
+    }
+
+    public void setPostalCode(String postalCode) {
+        this.postalCode = postalCode;
+    }
+
     public String getCc() {
         return cc;
     }
@@ -116,4 +127,6 @@ public class Location {
     public void setFormattedAddress(List<String> formattedAddress) {
         this.formattedAddress = formattedAddress;
     }
+
+
 }

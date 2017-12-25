@@ -11,5 +11,12 @@ public interface IRequestListPlaces {
     @GET("venues/search?v=20182412&limit=50")
     Call<Data> getListPlaces(@Query("client_id") String clientID,
                              @Query("client_secret") String clientSecret,
-                             @Query("ll")String s);
+                             @Query("ll") String s);
+
+    @GET("venues/explore?v=20182412")
+    Call<Data> getListRecommendationPlaces(@Query("client_id") String clientID,
+                                           @Query("client_secret") String clientSecret,
+                                           @Query("ll") String s,
+                                           @Query("venuePhotos") Integer isNeedPhoto
+    );
 }

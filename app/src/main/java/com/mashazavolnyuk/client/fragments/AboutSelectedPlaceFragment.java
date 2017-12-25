@@ -38,7 +38,7 @@ public class AboutSelectedPlaceFragment extends BaseFragment {
         RetrofitClient.changeApiBaseUrl("https://maps.googleapis.com/");
         IRequestStaticMap iRequestListPlaces = RetrofitClient.getRetrofit().create(IRequestStaticMap.class);
         iRequestListPlaces.getStaticGoogleMap("40.714728,-73.9986729", "640x400", "15",
-                "color:blue|size:mid",
+                "color:blue|40.714728,-73.9986729|size:mid|label:S",
                 "AIzaSyDMofTdX08zRW6ldhaPiCPhA6tz5dz_PVQ"
         ).enqueue(new Callback<ResponseBody>() {
             @Override

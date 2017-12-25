@@ -3,26 +3,15 @@ package com.mashazavolnyuk.client.data;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class LabeledLatLng {
+public class Sw {
 
 
-    @SerializedName("label")
-    @Expose
-    private String label;
     @SerializedName("lat")
     @Expose
     private Double lat;
     @SerializedName("lng")
     @Expose
     private Double lng;
-
-    public String getLabel() {
-        return label;
-    }
-
-    public void setLabel(String label) {
-        this.label = label;
-    }
 
     public Double getLat() {
         return lat;

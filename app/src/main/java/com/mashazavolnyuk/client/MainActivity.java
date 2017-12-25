@@ -15,7 +15,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        goToAboutSelectedPlace();
+        goToListPlaces();
     }
 
     public void goToListPlaces() {
@@ -26,12 +26,14 @@ public class MainActivity extends AppCompatActivity {
         goToFragment(new FilterFragment());
     }
 
-    public void goToMap(){
+    public void goToMap() {
         goToFragment(new MapFragment());
     }
-    public void goToAboutSelectedPlace(){
+
+    public void goToAboutSelectedPlace() {
         goToFragment(new AboutSelectedPlaceFragment());
     }
+
     private void goToFragment(Fragment fragment) {
         getFragmentManager().beginTransaction().replace(R.id.content, fragment)
                 .addToBackStack(fragment.getTag()).commit();

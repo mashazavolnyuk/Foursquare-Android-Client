@@ -2,55 +2,52 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp">
 
     <ImageView
-        android:id="@+id/imagePlace"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:background="@drawable/ic_default_building"
-        android:contentDescription="@string/contentDescription" />
+        android:id="@+id/photoPlace"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:contentDescription="@string/contentDescription"
+        android:gravity="center_vertical" />
 
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="72dp"
+        android:layout_weight="1"
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/namePlace"
+            android:id="@+id/firstPositionText"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
-        <LinearLayout
+
+        <TextView
+            android:id="@+id/secondPositionText"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content" />
 
-            <TextView
-                android:id="@+id/nameCategory"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
 
-            <TextView
-                android:id="@+id/typeExpensive"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-
-        <LinearLayout
+        <TextView
+            android:id="@+id/thirdPositionText"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content" />
 
-            <TextView
-                android:id="@+id/distance"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:id="@+id/address"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/rating"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:gravity="center_vertical"
+         />
 </LinearLayout>

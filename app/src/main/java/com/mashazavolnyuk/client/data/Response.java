@@ -6,27 +6,104 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 public class Response {
-
-    @SerializedName("venues")
+    @SerializedName("suggestedFilters")
     @Expose
-    private List<Venue> venues = null;
-    @SerializedName("confident")
+    private SuggestedFilters suggestedFilters;
+    @SerializedName("warning")
     @Expose
-    private Boolean confident;
+    private Warning warning;
+    @SerializedName("suggestedRadius")
+    @Expose
+    private Integer suggestedRadius;
+    @SerializedName("headerLocation")
+    @Expose
+    private String headerLocation;
+    @SerializedName("headerFullLocation")
+    @Expose
+    private String headerFullLocation;
+    @SerializedName("headerLocationGranularity")
+    @Expose
+    private String headerLocationGranularity;
+    @SerializedName("totalResults")
+    @Expose
+    private Integer totalResults;
+    @SerializedName("suggestedBounds")
+    @Expose
+    private SuggestedBounds suggestedBounds;
+    @SerializedName("groups")
+    @Expose
+    private List<Group> groups = null;
 
-    public List<Venue> getVenues() {
-        return venues;
+    public SuggestedFilters getSuggestedFilters() {
+        return suggestedFilters;
     }
 
-    public void setVenues(List<Venue> venues) {
-        this.venues = venues;
+    public void setSuggestedFilters(SuggestedFilters suggestedFilters) {
+        this.suggestedFilters = suggestedFilters;
     }
 
-    public Boolean getConfident() {
-        return confident;
+    public Warning getWarning() {
+        return warning;
     }
 
-    public void setConfident(Boolean confident) {
-        this.confident = confident;
+    public void setWarning(Warning warning) {
+        this.warning = warning;
     }
+
+    public Integer getSuggestedRadius() {
+        return suggestedRadius;
+    }
+
+    public void setSuggestedRadius(Integer suggestedRadius) {
+        this.suggestedRadius = suggestedRadius;
+    }
+
+    public String getHeaderLocation() {
+        return headerLocation;
+    }
+
+    public void setHeaderLocation(String headerLocation) {
+        this.headerLocation = headerLocation;
+    }
+
+    public String getHeaderFullLocation() {
+        return headerFullLocation;
+    }
+
+    public void setHeaderFullLocation(String headerFullLocation) {
+        this.headerFullLocation = headerFullLocation;
+    }
+
+    public String getHeaderLocationGranularity() {
+        return headerLocationGranularity;
+    }
+
+    public void setHeaderLocationGranularity(String headerLocationGranularity) {
+        this.headerLocationGranularity = headerLocationGranularity;
+    }
+
+    public Integer getTotalResults() {
+        return totalResults;
+    }
+
+    public void setTotalResults(Integer totalResults) {
+        this.totalResults = totalResults;
+    }
+
+    public SuggestedBounds getSuggestedBounds() {
+        return suggestedBounds;
+    }
+
+    public void setSuggestedBounds(SuggestedBounds suggestedBounds) {
+        this.suggestedBounds = suggestedBounds;
+    }
+
+    public List<Group> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(List<Group> groups) {
+        this.groups = groups;
+    }
+
 }

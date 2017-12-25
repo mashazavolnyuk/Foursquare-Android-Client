@@ -4,6 +4,8 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class Meta {
+
+
     @SerializedName("code")
     @Expose
     private Integer code;
@@ -26,4 +28,6 @@ public class Meta {
     public void setRequestId(String requestId) {
         this.requestId = requestId;
     }
+
+
 }

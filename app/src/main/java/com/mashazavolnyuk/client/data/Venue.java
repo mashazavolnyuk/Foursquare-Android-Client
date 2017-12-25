@@ -6,7 +6,6 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 public class Venue {
-
     @SerializedName("id")
     @Expose
     private String id;
@@ -28,27 +27,39 @@ public class Venue {
     @SerializedName("stats")
     @Expose
     private Stats stats;
+    @SerializedName("url")
+    @Expose
+    private String url;
+    @SerializedName("price")
+    @Expose
+    private Price price;
+    @SerializedName("rating")
+    @Expose
+    private Double rating;
+    @SerializedName("ratingColor")
+    @Expose
+    private String ratingColor;
+    @SerializedName("ratingSignals")
+    @Expose
+    private Integer ratingSignals;
     @SerializedName("allowMenuUrlEdit")
     @Expose
     private Boolean allowMenuUrlEdit;
     @SerializedName("beenHere")
     @Expose
     private BeenHere beenHere;
-    @SerializedName("specials")
+    @SerializedName("hours")
     @Expose
-    private Specials specials;
+    private Hours hours;
+    @SerializedName("photos")
+    @Expose
+    private Photos photos;
     @SerializedName("hereNow")
     @Expose
     private HereNow hereNow;
-    @SerializedName("referralId")
+    @SerializedName("featuredPhotos")
     @Expose
-    private String referralId;
-    @SerializedName("venueChains")
-    @Expose
-    private List<Object> venueChains = null;
-    @SerializedName("hasPerk")
-    @Expose
-    private Boolean hasPerk;
+    private FeaturedPhotos featuredPhotos;
 
     public String getId() {
         return id;
@@ -106,6 +117,46 @@ public class Venue {
         this.stats = stats;
     }
 
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public Price getPrice() {
+        return price;
+    }
+
+    public void setPrice(Price price) {
+        this.price = price;
+    }
+
+    public Double getRating() {
+        return rating;
+    }
+
+    public void setRating(Double rating) {
+        this.rating = rating;
+    }
+
+    public String getRatingColor() {
+        return ratingColor;
+    }
+
+    public void setRatingColor(String ratingColor) {
+        this.ratingColor = ratingColor;
+    }
+
+    public Integer getRatingSignals() {
+        return ratingSignals;
+    }
+
+    public void setRatingSignals(Integer ratingSignals) {
+        this.ratingSignals = ratingSignals;
+    }
+
     public Boolean getAllowMenuUrlEdit() {
         return allowMenuUrlEdit;
     }
@@ -122,12 +173,20 @@ public class Venue {
         this.beenHere = beenHere;
     }
 
-    public Specials getSpecials() {
-        return specials;
+    public Hours getHours() {
+        return hours;
     }
 
-    public void setSpecials(Specials specials) {
-        this.specials = specials;
+    public void setHours(Hours hours) {
+        this.hours = hours;
+    }
+
+    public Photos getPhotos() {
+        return photos;
+    }
+
+    public void setPhotos(Photos photos) {
+        this.photos = photos;
     }
 
     public HereNow getHereNow() {
@@ -138,27 +197,12 @@ public class Venue {
         this.hereNow = hereNow;
     }
 
-    public String getReferralId() {
-        return referralId;
+    public FeaturedPhotos getFeaturedPhotos() {
+        return featuredPhotos;
     }
 
-    public void setReferralId(String referralId) {
-        this.referralId = referralId;
+    public void setFeaturedPhotos(FeaturedPhotos featuredPhotos) {
+        this.featuredPhotos = featuredPhotos;
     }
 
-    public List<Object> getVenueChains() {
-        return venueChains;
-    }
-
-    public void setVenueChains(List<Object> venueChains) {
-        this.venueChains = venueChains;
-    }
-
-    public Boolean getHasPerk() {
-        return hasPerk;
-    }
-
-    public void setHasPerk(Boolean hasPerk) {
-        this.hasPerk = hasPerk;
-    }
 }
