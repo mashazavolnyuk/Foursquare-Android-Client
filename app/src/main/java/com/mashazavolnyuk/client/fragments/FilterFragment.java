@@ -1,16 +1,18 @@
 package com.mashazavolnyuk.client.fragments;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.mashazavolnyuk.client.MainActivity;
@@ -21,13 +23,36 @@ public class FilterFragment extends BaseFragment {
 
     TextView selectPlaceAndRadius;
     SharedPreferences preferences;
+    Button sortByRelevance;
+    Button sortByDistance;
+    Button filterByExpensiveLevel1;
+    Button filterByExpensiveLevel2;
+    Button filterByExpensiveLevel3;
+    Button filterByExpensiveLevel4;
 
+    boolean isAvailableLevel1;
+    boolean isAvailableLevel2;
+    boolean isAvailableLevel3;
+    boolean isAvailableLevel4;
+    boolean isSortByRelevance;
+
+    @SuppressLint("CommitPrefEdits")
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_filter, container, false);
         setHasOptionsMenu(true);
+        sortByRelevance = view.findViewById(R.id.sortByRelevance);
+        sortByDistance = view.findViewById(R.id.sortByDistance);
+        filterByExpensiveLevel1 = view.findViewById(R.id.filterByExpensiveLevel1);
+        filterByExpensiveLevel2 = view.findViewById(R.id.filterByExpensiveLevel2);
+        filterByExpensiveLevel3 = view.findViewById(R.id.filterByExpensiveLevel3);
+        filterByExpensiveLevel4 = view.findViewById(R.id.filterByExpensiveLevel4);
+        preferences = getActivity().getSharedPreferences("Filters", Context.MODE_PRIVATE);
+
+        updateUIAccordingToFilterSettings();
+        setListeners();
         selectPlaceAndRadius = view.findViewById(R.id.selectPlaceAndRadius);
         selectPlaceAndRadius.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -35,8 +60,41 @@ public class FilterFragment extends BaseFragment {
                 ((MainActivity) getActivity()).goToMap();
             }
         });
-        preferences = getActivity().getSharedPreferences("Filters", Context.MODE_PRIVATE);
+
         return view;
+    }
+
+    private void setListeners() {
+        sortByRelevance.setOnClickListener(view -> {
+            if (!isSortByRelevance) {
+                isSortByRelevance = false;
+                highlightActiveElement(sortByDistance);
+            }
+        });
+        filterByExpensiveLevel1.setOnClickListener(view -> {
+            if (!isAvailableLevel1) {
+                isAvailableLevel1 = true;
+                highlightActiveElement(filterByExpensiveLevel1);
+            }
+        });
+        filterByExpensiveLevel2.setOnClickListener( view -> {
+                if (!isAvailableLevel2) {
+                    isAvailableLevel1 = true;
+                    highlightActiveElement(filterByExpensiveLevel2);
+                }
+        });
+        filterByExpensiveLevel3.setOnClickListener(view -> {
+            if (!isAvailableLevel3) {
+                isAvailableLevel3 = true;
+                highlightActiveElement(filterByExpensiveLevel3);
+            }
+        });
+        filterByExpensiveLevel4.setOnClickListener(view -> {
+            if (!isAvailableLevel4) {
+                isAvailableLevel4 = true;
+                highlightActiveElement(filterByExpensiveLevel4);
+            }
+        });
     }
 
     @Override
@@ -56,6 +114,12 @@ public class FilterFragment extends BaseFragment {
         return false;
     }
 
+    private void saveParamInPreference(String tag, boolean value) {
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putBoolean(tag, value);
+        editor.apply();
+    }
+
     private void resetFilterSettings() {
         SharedPreferences.Editor editor = preferences.edit();
         editor.putBoolean(FilterParams.SORT_BY_RELEVANCE, true);
@@ -67,7 +131,36 @@ public class FilterFragment extends BaseFragment {
     }
 
     private void updateUIAccordingToFilterSettings() {
+        isSortByRelevance = preferences.getBoolean(FilterParams.SORT_BY_RELEVANCE, true);
+        isAvailableLevel1 = preferences.getBoolean(FilterParams.FILTER_BY_EXPENSIVE_LEVEL1, false);
+        isAvailableLevel2 = preferences.getBoolean(FilterParams.FILTER_BY_EXPENSIVE_LEVEL2, false);
+        isAvailableLevel3 = preferences.getBoolean(FilterParams.FILTER_BY_EXPENSIVE_LEVEL3, false);
+        isAvailableLevel4 = preferences.getBoolean(FilterParams.FILTER_BY_EXPENSIVE_LEVEL4, false);
+        if (isSortByRelevance) {
+            highlightActiveElement(sortByRelevance);
+        } else {
+            highlightActiveElement(sortByDistance);
+        }
+        if (isAvailableLevel1) {
+            highlightActiveElement(filterByExpensiveLevel1);
+        }
+        if (isAvailableLevel2) {
+            highlightActiveElement(filterByExpensiveLevel2);
+        }
+        if (isAvailableLevel3) {
+            highlightActiveElement(filterByExpensiveLevel3);
+        }
+        if (isAvailableLevel4) {
+            highlightActiveElement(filterByExpensiveLevel4);
+        }
+    }
 
+    private void highlightActiveElement(Button button) {
+        Resources resources = getResources();
+        int colorBackground = resources.getColor(R.color.colorPrimary);
+        int colorText = resources.getColor(R.color.white);
+        button.setBackgroundColor(colorBackground);
+        button.setTextColor(colorText);
     }
 
 }

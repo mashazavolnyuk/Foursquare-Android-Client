@@ -47,11 +47,11 @@
 
     </LinearLayout>
 
-    <TextView
+    <com.mashazavolnyuk.client.RatingView
         android:id="@+id/rating"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:background="@drawable/ic_raiting_style_bg"
+        android:background="@drawable/ic_rating_style_bg"
         android:gravity="center_vertical"
         android:textAlignment="center"
         android:textColor="#fff"

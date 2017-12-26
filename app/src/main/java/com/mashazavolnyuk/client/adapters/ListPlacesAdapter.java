@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.mashazavolnyuk.client.R;
+import com.mashazavolnyuk.client.RatingView;
 import com.mashazavolnyuk.client.data.Item;
 import com.mashazavolnyuk.client.data.Item__;
 import com.mashazavolnyuk.client.data.Price;
@@ -49,7 +51,7 @@ public class ListPlacesAdapter extends RecyclerView.Adapter<ListPlacesAdapter.Ho
     }
 
     @Override
-    public void onBindViewHolder(ListPlacesAdapter.HolderAdapter holder, int position) {
+    public void onBindViewHolder(HolderAdapter holder, int position) {
         final Item item = data.get(position);
         Venue venue = item.getVenue();
         Price price = venue.getPrice();
@@ -61,21 +63,16 @@ public class ListPlacesAdapter extends RecyclerView.Adapter<ListPlacesAdapter.Ho
             Picasso.with(context).load(uri).error(R.drawable.ic_error_image).into(holder.photoPlace);
         }
         holder.firstPositionText.setText(venue.getName());
-        holder.secondPositionText.setText(venue.getCategories().get(0).getName() + "," + valuePrice);
+        String valueSecondPostion = venue.getCategories().get(0).getName() + "," + valuePrice;
+        holder.secondPositionText.setText(valueSecondPostion);
         String kmValue = getStringDistanceByValue(venue.getLocation().getDistance());
         String address = venue.getLocation().getAddress();
         String valueForThirdPosition = kmValue + "," + address;
         holder.thirdPositionText.setText(valueForThirdPosition);
         holder.rating.setText(String.format("%s", venue.getRating().toString()));
         int color = Color.parseColor("#" + venue.getRatingColor());
-        ColorStateList csl = new ColorStateList(new int[][]{{}}, new int[]{color});
-        holder.rating.setBackgroundTintList(csl);
-        holder.root.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                iListPlacesOnClickListener.setItem(item);
-            }
-        });
+        holder.rating.setBackgroundShapeColor(color);
+        holder.root.setOnClickListener(view -> iListPlacesOnClickListener.setItem(item));
     }
 
     private String getStringDistanceByValue(Integer value) {
@@ -106,7 +103,7 @@ public class ListPlacesAdapter extends RecyclerView.Adapter<ListPlacesAdapter.Ho
         TextView firstPositionText;
         TextView secondPositionText;
         TextView thirdPositionText;
-        TextView rating;
+        RatingView rating;
 
         HolderAdapter(View view) {
             super(view);
@@ -126,18 +123,18 @@ public class ListPlacesAdapter extends RecyclerView.Adapter<ListPlacesAdapter.Ho
             FilterResults results = new FilterResults();
 
             if (constraint != null && constraint.length() > 0) {
-                List foundItems = new ArrayList();
+                List<Item> filterList = new ArrayList<>();
                 List<Item> items = ListPlacesAdapter.this.filterList;
                 for (int i = 0; i < items.size(); i++) {
                     if ((items.get(i).getVenue().getName().toUpperCase()).contains(constraint.toString().toUpperCase()) ||
                             (items.get(i).getVenue().getCategories().get(0).getPluralName().toUpperCase()).contains(constraint.toString().toUpperCase()) ||
                             (items.get(i).getVenue().getLocation().getAddress().toUpperCase()).contains(constraint.toString().toUpperCase())
                             ) {
-                        foundItems.add(ListPlacesAdapter.this.filterList.get(i));
+                        filterList.add(ListPlacesAdapter.this.filterList.get(i));
                     }
                 }
-                results.count = foundItems.size();
-                results.values = foundItems;
+                results.count = filterList.size();
+                results.values = filterList;
             } else {
                 results.count = filterList.size();
                 results.values = filterList;
@@ -147,7 +144,7 @@ public class ListPlacesAdapter extends RecyclerView.Adapter<ListPlacesAdapter.Ho
 
         @Override
         protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-            data = (List) filterResults.values;
+            data = (List<Item>) filterResults.values;
             notifyDataSetChanged();
         }
     }

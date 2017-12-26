@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.mashazavolnyuk.client.R;
+import com.mashazavolnyuk.client.RatingView;
 import com.mashazavolnyuk.client.adapters.ImagePagerAdapter;
 import com.mashazavolnyuk.client.adapters.TipsAdapter;
 import com.mashazavolnyuk.client.api.RetrofitClient;
@@ -45,7 +46,7 @@ public class AboutSelectedPlaceFragment extends BaseFragment {
     TextView secondField;
     TextView thirdField;
     TextView textCurrency;
-    TextView rating;
+    RatingView rating;
     ImageView imageMap;
     RecyclerView recyclerViewTips;
     Item item;
@@ -122,7 +123,7 @@ public class AboutSelectedPlaceFragment extends BaseFragment {
     private void fillAboutPlace() {
         Venue venue = item.getVenue();
         rating.setText(venue.getRating().toString());
-        rating.setBackgroundColor(Color.parseColor("#" + venue.getRatingColor()));
+        rating.setBackgroundShapeColor(Color.parseColor("#" + venue.getRatingColor()));
         firstField.setText(venue.getName());
         secondField.setText(venue.getCategories().get(0).getPluralName());
         if (venue.getPrice() != null) {
