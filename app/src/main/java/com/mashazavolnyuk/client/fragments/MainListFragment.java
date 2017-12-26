@@ -47,6 +47,7 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
     private ListPlaceViewModel listPlaceViewMode;
     private RecyclerView listPlaces;
     private LocationManager locationManager;
+    private ListPlacesAdapter listPlacesAdapter;
 
     @Nullable
     @Override
@@ -209,7 +210,7 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
     }
 
     private void fillData(Group groupPlaces) {
-        ListPlacesAdapter listPlacesAdapter = new ListPlacesAdapter(getActivity(), groupPlaces, this);
+        listPlacesAdapter = new ListPlacesAdapter(getActivity(), groupPlaces.getItems(), this);
         listPlaces.setLayoutManager(new LinearLayoutManager(getActivity()));
         listPlaces.setAdapter(listPlacesAdapter);
     }
@@ -221,6 +222,7 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
 
     @Override
     public boolean onQueryTextChange(String newText) {
+        listPlacesAdapter.getFilter().filter(newText);
         return false;
     }
 

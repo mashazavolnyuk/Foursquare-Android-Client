@@ -15,10 +15,11 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="@dimen/padding_beetwen_element_default"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingTop="@dimen/padding_beetwen_element_default">
 
         <Button
+            android:id="@+id/sortByRelevance"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -26,6 +27,7 @@
             android:text="@string/relevance" />
 
         <Button
+            android:id="@+id/sortByDistance"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -45,6 +47,7 @@
         android:orientation="horizontal">
 
         <Button
+            android:id="@+id/filterByExpensiveLevel1"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -52,6 +55,7 @@
             android:text="@string/price_1" />
 
         <Button
+            android:id="@+id/filterByExpensiveLevel2"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -59,6 +63,7 @@
             android:text="@string/price_2" />
 
         <Button
+            android:id="@+id/filterByExpensiveLevel3"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -66,6 +71,7 @@
             android:text="@string/price_3" />
 
         <Button
+            android:id="@+id/filterByExpensiveLevel4"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -80,6 +86,7 @@
         android:text="@string/search_there" />
 
     <TextView
+        android:id="@+id/hereNow"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:drawableEnd="@drawable/ic_close" />

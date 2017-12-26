@@ -8,30 +8,36 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import com.mashazavolnyuk.client.R;
-import com.mashazavolnyuk.client.RaitingView;
-import com.mashazavolnyuk.client.data.Group;
 import com.mashazavolnyuk.client.data.Item;
 import com.mashazavolnyuk.client.data.Item__;
 import com.mashazavolnyuk.client.data.Price;
 import com.mashazavolnyuk.client.data.Venue;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 
-public class ListPlacesAdapter extends RecyclerView.Adapter<ListPlacesAdapter.HolderAdapter> {
+public class ListPlacesAdapter extends RecyclerView.Adapter<ListPlacesAdapter.HolderAdapter> implements Filterable {
 
     private Context context;
-    private Group groupList;
+    private List<Item> data;
+    private List<Item> filterList;
+    private ListPlaceFilter valueFilter;
     private IListPlacesOnClickListener iListPlacesOnClickListener;
 
-    public ListPlacesAdapter(Context context, Group groupList, IListPlacesOnClickListener iListPlacesOnClickListener) {
+    public ListPlacesAdapter(Context context, List<Item> data, IListPlacesOnClickListener iListPlacesOnClickListener) {
         this.context = context;
-        this.groupList = groupList;
+        this.data = data;
+        this.filterList = data;
         this.iListPlacesOnClickListener = iListPlacesOnClickListener;
     }
 
@@ -44,7 +50,7 @@ public class ListPlacesAdapter extends RecyclerView.Adapter<ListPlacesAdapter.Ho
 
     @Override
     public void onBindViewHolder(ListPlacesAdapter.HolderAdapter holder, int position) {
-        final Item item = groupList.getItems().get(position);
+        final Item item = data.get(position);
         Venue venue = item.getVenue();
         Price price = venue.getPrice();
         String valuePrice = price != null ? price.getCurrency() : "";
@@ -61,7 +67,7 @@ public class ListPlacesAdapter extends RecyclerView.Adapter<ListPlacesAdapter.Ho
         String valueForThirdPosition = kmValue + "," + address;
         holder.thirdPositionText.setText(valueForThirdPosition);
         holder.rating.setText(String.format("%s", venue.getRating().toString()));
-        int color =Color.parseColor("#" + venue.getRatingColor());
+        int color = Color.parseColor("#" + venue.getRatingColor());
         ColorStateList csl = new ColorStateList(new int[][]{{}}, new int[]{color});
         holder.rating.setBackgroundTintList(csl);
         holder.root.setOnClickListener(new View.OnClickListener() {
@@ -79,11 +85,19 @@ public class ListPlacesAdapter extends RecyclerView.Adapter<ListPlacesAdapter.Ho
 
     @Override
     public int getItemCount() {
-        if (groupList != null) {
-            return groupList.getItems().size();
+        if (data != null) {
+            return data.size();
         } else {
             return 0;
         }
+    }
+
+    @Override
+    public Filter getFilter() {
+        if (valueFilter == null) {
+            valueFilter = new ListPlaceFilter();
+        }
+        return valueFilter;
     }
 
     class HolderAdapter extends RecyclerView.ViewHolder {
@@ -94,7 +108,7 @@ public class ListPlacesAdapter extends RecyclerView.Adapter<ListPlacesAdapter.Ho
         TextView thirdPositionText;
         TextView rating;
 
-         HolderAdapter(View view) {
+        HolderAdapter(View view) {
             super(view);
             root = view.findViewById(R.id.rootList);
             photoPlace = view.findViewById(R.id.photoPlace);
@@ -102,6 +116,39 @@ public class ListPlacesAdapter extends RecyclerView.Adapter<ListPlacesAdapter.Ho
             secondPositionText = view.findViewById(R.id.secondPositionText);
             thirdPositionText = view.findViewById(R.id.thirdPositionText);
             rating = view.findViewById(R.id.rating);
+        }
+    }
+
+    private class ListPlaceFilter extends Filter {
+
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            FilterResults results = new FilterResults();
+
+            if (constraint != null && constraint.length() > 0) {
+                List foundItems = new ArrayList();
+                List<Item> items = ListPlacesAdapter.this.filterList;
+                for (int i = 0; i < items.size(); i++) {
+                    if ((items.get(i).getVenue().getName().toUpperCase()).contains(constraint.toString().toUpperCase()) ||
+                            (items.get(i).getVenue().getCategories().get(0).getPluralName().toUpperCase()).contains(constraint.toString().toUpperCase()) ||
+                            (items.get(i).getVenue().getLocation().getAddress().toUpperCase()).contains(constraint.toString().toUpperCase())
+                            ) {
+                        foundItems.add(ListPlacesAdapter.this.filterList.get(i));
+                    }
+                }
+                results.count = foundItems.size();
+                results.values = foundItems;
+            } else {
+                results.count = filterList.size();
+                results.values = filterList;
+            }
+            return results;
+        }
+
+        @Override
+        protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+            data = (List) filterResults.values;
+            notifyDataSetChanged();
         }
     }
 }
