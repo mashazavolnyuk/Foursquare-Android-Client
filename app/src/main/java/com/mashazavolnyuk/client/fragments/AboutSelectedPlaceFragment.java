@@ -125,7 +125,8 @@ public class AboutSelectedPlaceFragment extends BaseFragment {
         rating.setBackgroundColor(Color.parseColor("#" + venue.getRatingColor()));
         firstField.setText(venue.getName());
         secondField.setText(venue.getCategories().get(0).getPluralName());
-        textCurrency.setText(venue.getPrice().getCurrency());
-
+        if (venue.getPrice() != null) {
+            textCurrency.setText(venue.getPrice().getCurrency());
+        }
     }
 }

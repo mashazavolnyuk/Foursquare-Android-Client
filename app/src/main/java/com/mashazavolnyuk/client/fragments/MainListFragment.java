@@ -35,8 +35,8 @@ import com.mashazavolnyuk.client.data.Group;
 import com.mashazavolnyuk.client.data.Item;
 import com.mashazavolnyuk.client.viewmodels.DetailAboutPlaceViewModel;
 import com.mashazavolnyuk.client.viewmodels.ListPlaceViewModel;
-import java.util.List;
 
+import java.util.List;
 
 
 public class MainListFragment extends BaseFragment implements SearchView.OnQueryTextListener,

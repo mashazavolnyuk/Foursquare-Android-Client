@@ -4,8 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp">
+    android:paddingEnd="@dimen/padding_right_default"
+    android:paddingStart="@dimen/padding_left_default">
 
     <ImageView
         android:id="@+id/photoPlace"
@@ -18,37 +18,42 @@
         android:layout_width="0dp"
         android:layout_height="72dp"
         android:layout_weight="1"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingEnd="@dimen/padding_beetwen_element_default"
+        android:paddingStart="@dimen/padding_beetwen_element_default">
 
         <TextView
             android:id="@+id/firstPositionText"
-            android:ellipsize="end"
-            android:maxLines="1"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1" />
 
 
         <TextView
             android:id="@+id/secondPositionText"
-            android:ellipsize="end"
-            android:maxLines="1"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1" />
 
 
         <TextView
             android:id="@+id/thirdPositionText"
-            android:ellipsize="end"
-            android:maxLines="1"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1" />
 
     </LinearLayout>
 
     <TextView
         android:id="@+id/rating"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:background="@drawable/ic_raiting_style_bg"
         android:gravity="center_vertical"
-         />
+        android:textAlignment="center"
+        android:textColor="#fff"
+        android:textSize="12sp" />
 </LinearLayout>

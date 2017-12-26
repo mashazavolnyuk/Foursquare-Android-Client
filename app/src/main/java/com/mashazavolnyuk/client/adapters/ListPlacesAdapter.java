@@ -1,6 +1,7 @@
 package com.mashazavolnyuk.client.adapters;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
@@ -11,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.mashazavolnyuk.client.R;
+import com.mashazavolnyuk.client.RaitingView;
 import com.mashazavolnyuk.client.data.Group;
 import com.mashazavolnyuk.client.data.Item;
 import com.mashazavolnyuk.client.data.Item__;
@@ -59,7 +61,9 @@ public class ListPlacesAdapter extends RecyclerView.Adapter<ListPlacesAdapter.Ho
         String valueForThirdPosition = kmValue + "," + address;
         holder.thirdPositionText.setText(valueForThirdPosition);
         holder.rating.setText(String.format("%s", venue.getRating().toString()));
-        holder.rating.setBackgroundColor(Color.parseColor("#" + venue.getRatingColor()));
+        int color =Color.parseColor("#" + venue.getRatingColor());
+        ColorStateList csl = new ColorStateList(new int[][]{{}}, new int[]{color});
+        holder.rating.setBackgroundTintList(csl);
         holder.root.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
