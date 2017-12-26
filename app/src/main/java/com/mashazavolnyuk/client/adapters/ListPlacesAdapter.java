@@ -1,10 +1,8 @@
 package com.mashazavolnyuk.client.adapters;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.net.Uri;
-import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.mashazavolnyuk.client.R;
-import com.mashazavolnyuk.client.RatingView;
+import com.mashazavolnyuk.client.customview.RatingView;
 import com.mashazavolnyuk.client.data.Item;
 import com.mashazavolnyuk.client.data.Item__;
 import com.mashazavolnyuk.client.data.Price;

@@ -9,6 +9,7 @@ import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public class RetrofitClient {
 
@@ -21,6 +22,26 @@ public class RetrofitClient {
                     .baseUrl(BASE_URL);
 
     static {
+        builder = new retrofit2.Retrofit.Builder().
+                baseUrl(BASE_URL).
+                client(getHttpClient().build())
+                .addConverterFactory(ScalarsConverterFactory.create()).
+                        addConverterFactory(GsonConverterFactory.create());
+        retrofit = builder.build();
+    }
+
+    public static void changeApiBaseUrl(String newApiBaseUrl) {
+        BASE_URL = newApiBaseUrl;
+
+        builder = new retrofit2.Retrofit.Builder().
+                baseUrl(BASE_URL).
+                client( getHttpClient().build())
+                .addConverterFactory(ScalarsConverterFactory.create()).
+                        addConverterFactory(GsonConverterFactory.create());
+        retrofit = builder.build();
+    }
+
+    private static OkHttpClient.Builder getHttpClient() {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         logging.setLevel(HttpLoggingInterceptor.Level.BASIC);
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
@@ -36,21 +57,7 @@ public class RetrofitClient {
                 return chain.proceed(request);
             }
         }).addInterceptor(logging);
-
-        builder = new retrofit2.Retrofit.Builder().
-                baseUrl(BASE_URL).
-                client(httpClient.build()).
-                addConverterFactory(GsonConverterFactory.create());
-        retrofit = builder.build();
-    }
-
-    public static void changeApiBaseUrl(String newApiBaseUrl) {
-        BASE_URL = newApiBaseUrl;
-
-        builder = new Retrofit.Builder()
-                .addConverterFactory(GsonConverterFactory.create())
-                .baseUrl(BASE_URL);
-        retrofit = builder.build();
+        return httpClient;
     }
 
     public static Retrofit getRetrofit() {

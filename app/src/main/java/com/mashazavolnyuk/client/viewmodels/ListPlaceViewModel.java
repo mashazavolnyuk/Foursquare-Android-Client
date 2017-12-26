@@ -32,7 +32,7 @@ public class ListPlaceViewModel extends ViewModel {
         ListPlaceRepository listPlaceRepository = new ListPlaceRepository();
         listPlaceRepository.getListPlaces(latitude, longitude, new IObserverListPlacesData() {
             @Override
-            public void newData(LiveData<Data> newDataLiveData) {
+            public void newData(LiveData<? extends Data> newDataLiveData) {
                 group.setValue(newDataLiveData.getValue().getResponse().getGroups());
                 iObserverFinishedLoadingPlace.loadedData(newDataLiveData.getValue());
             }

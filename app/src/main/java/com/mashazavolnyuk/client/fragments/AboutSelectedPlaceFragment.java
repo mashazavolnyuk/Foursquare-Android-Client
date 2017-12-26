@@ -1,5 +1,6 @@
 package com.mashazavolnyuk.client.fragments;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModelProviders;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -17,17 +18,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.mashazavolnyuk.client.R;
-import com.mashazavolnyuk.client.RatingView;
-import com.mashazavolnyuk.client.adapters.ImagePagerAdapter;
+import com.mashazavolnyuk.client.adapters.ImageGalleryAdapter;
+import com.mashazavolnyuk.client.customview.RatingView;
 import com.mashazavolnyuk.client.adapters.TipsAdapter;
 import com.mashazavolnyuk.client.api.RetrofitClient;
 import com.mashazavolnyuk.client.api.requests.IRequestStaticMap;
-import com.mashazavolnyuk.client.data.Group_;
 import com.mashazavolnyuk.client.data.Item;
-import com.mashazavolnyuk.client.data.Item__;
-import com.mashazavolnyuk.client.data.Photos;
 import com.mashazavolnyuk.client.data.Tip;
 import com.mashazavolnyuk.client.data.Venue;
+import com.mashazavolnyuk.client.data.photos.DetailedPhoto;
+import com.mashazavolnyuk.client.data.photos.PhotoItem;
+import com.mashazavolnyuk.client.repositories.IObserverDetailedPhoto;
 import com.mashazavolnyuk.client.viewmodels.DetailAboutPlaceViewModel;
 
 import java.io.IOException;
@@ -50,6 +51,8 @@ public class AboutSelectedPlaceFragment extends BaseFragment {
     ImageView imageMap;
     RecyclerView recyclerViewTips;
     Item item;
+    DetailAboutPlaceViewModel model;
+    RecyclerView recyclerView;
 
     @Nullable
     @Override
@@ -57,13 +60,14 @@ public class AboutSelectedPlaceFragment extends BaseFragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_about_selected_place, container, false);
         imageMap = view.findViewById(R.id.imageMapSelectedPlace);
-        viewPager = view.findViewById(R.id.pagerGallery);
+        recyclerView =view.findViewById(R.id.listGallery);
         rating = view.findViewById(R.id.rating);
         firstField = view.findViewById(R.id.firstPositionText);
         secondField = view.findViewById(R.id.secondPositionText);
         thirdField = view.findViewById(R.id.thirdPositionText);
         textCurrency = view.findViewById(R.id.textCurrency);
-        DetailAboutPlaceViewModel model = ViewModelProviders.of((FragmentActivity) getActivity()).get(DetailAboutPlaceViewModel.class);
+        model = ViewModelProviders.of((FragmentActivity)
+                getActivity()).get(DetailAboutPlaceViewModel.class);
         item = model.getSelected().getValue();
         recyclerViewTips = view.findViewById(R.id.listTips);
         fillTestData(item);
@@ -106,11 +110,20 @@ public class AboutSelectedPlaceFragment extends BaseFragment {
     }
 
     private void fillGallery() {
-        Photos photos = item.getVenue().getPhotos();
-        List<Group_> groups = photos.getGroups();
-        List<Item__> items = groups.get(0).getItems();
-        ImagePagerAdapter imagePagerAdapter = new ImagePagerAdapter(getActivity(), items);
-        viewPager.setAdapter(imagePagerAdapter);
+        Venue venue = item.getVenue();
+        model.getPhotoByIdVenue(venue.getId(), new IObserverDetailedPhoto() {
+            @Override
+            public void newData(LiveData<DetailedPhoto> dataLiveData) {
+                DetailedPhoto detailedPhoto = dataLiveData.getValue();
+                List<PhotoItem> photoItems = detailedPhoto.getItems();
+                LinearLayoutManager horizontalLayoutManagaer
+                        = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
+                ImageGalleryAdapter galleryAdapter = new ImageGalleryAdapter(getActivity(), photoItems);
+                recyclerView.setLayoutManager(horizontalLayoutManagaer);
+                recyclerView.setAdapter(galleryAdapter);
+            }
+        });
+
     }
 
     private void fillListTips() {

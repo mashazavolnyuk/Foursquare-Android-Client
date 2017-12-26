@@ -1,4 +1,4 @@
-package com.mashazavolnyuk.client;
+package com.mashazavolnyuk.client.customview;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -7,13 +7,21 @@ import android.os.Build;
 import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
 
+import com.mashazavolnyuk.client.R;
+
 public class RatingView extends AppCompatTextView {
-
-
 
     public RatingView(Context context) {
         super(context);
 
+    }
+
+    public RatingView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
+
+    public RatingView(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
     }
 
     public void setBackgroundShapeColor(int color) {
@@ -26,13 +34,5 @@ public class RatingView extends AppCompatTextView {
         GradientDrawable gradientDrawable = (GradientDrawable) background;
         gradientDrawable.setColor(color);
         setBackground(gradientDrawable);
-    }
-
-    public RatingView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
-
-    public RatingView(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
     }
 }

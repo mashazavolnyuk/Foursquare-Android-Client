@@ -50,7 +50,7 @@ public class FilterFragment extends BaseFragment {
         filterByExpensiveLevel3 = view.findViewById(R.id.filterByExpensiveLevel3);
         filterByExpensiveLevel4 = view.findViewById(R.id.filterByExpensiveLevel4);
         preferences = getActivity().getSharedPreferences("Filters", Context.MODE_PRIVATE);
-
+        initValueFromPreference();
         updateUIAccordingToFilterSettings();
         setListeners();
         selectPlaceAndRadius = view.findViewById(R.id.selectPlaceAndRadius);
@@ -64,37 +64,99 @@ public class FilterFragment extends BaseFragment {
         return view;
     }
 
+    private void initValueFromPreference() {
+        isSortByRelevance = preferences.getBoolean(FilterParams.SORT_BY_RELEVANCE, true);
+        isAvailableLevel1 = preferences.getBoolean(FilterParams.FILTER_BY_EXPENSIVE_LEVEL1, false);
+        isAvailableLevel2 = preferences.getBoolean(FilterParams.FILTER_BY_EXPENSIVE_LEVEL2, false);
+        isAvailableLevel3 = preferences.getBoolean(FilterParams.FILTER_BY_EXPENSIVE_LEVEL3, false);
+        isAvailableLevel4 = preferences.getBoolean(FilterParams.FILTER_BY_EXPENSIVE_LEVEL4, false);
+    }
+
     private void setListeners() {
+        sortByDistance.setOnClickListener(view -> {
+            if (!isSortByRelevance) {
+                highlightActiveElement(sortByDistance);
+                isSortByRelevance = false;
+            } else {
+                setDefaultStyleElement(sortByDistance);
+                isSortByRelevance = true;
+            }
+            applyChangeForLevel(5, sortByRelevance); //one boolean for two element
+        });
         sortByRelevance.setOnClickListener(view -> {
             if (!isSortByRelevance) {
                 isSortByRelevance = false;
-                highlightActiveElement(sortByDistance);
+            } else {
+                isSortByRelevance = true;
             }
+            applyChangeForLevel(5, sortByRelevance);
         });
         filterByExpensiveLevel1.setOnClickListener(view -> {
             if (!isAvailableLevel1) {
                 isAvailableLevel1 = true;
-                highlightActiveElement(filterByExpensiveLevel1);
+            } else {
+                isAvailableLevel1 = false;
             }
+            applyChangeForLevel(1, filterByExpensiveLevel1);
         });
-        filterByExpensiveLevel2.setOnClickListener( view -> {
-                if (!isAvailableLevel2) {
-                    isAvailableLevel1 = true;
-                    highlightActiveElement(filterByExpensiveLevel2);
-                }
+        filterByExpensiveLevel2.setOnClickListener(view -> {
+            if (!isAvailableLevel2) {
+                isAvailableLevel2 = true;
+            } else {
+                isAvailableLevel2 = false;
+            }
+            applyChangeForLevel(2, filterByExpensiveLevel2);
         });
         filterByExpensiveLevel3.setOnClickListener(view -> {
             if (!isAvailableLevel3) {
                 isAvailableLevel3 = true;
-                highlightActiveElement(filterByExpensiveLevel3);
+            } else {
+                isAvailableLevel3 = false;
             }
+            applyChangeForLevel(3, filterByExpensiveLevel3);
         });
         filterByExpensiveLevel4.setOnClickListener(view -> {
             if (!isAvailableLevel4) {
                 isAvailableLevel4 = true;
-                highlightActiveElement(filterByExpensiveLevel4);
+            } else {
+                isAvailableLevel4 = false;
             }
+            applyChangeForLevel(4, filterByExpensiveLevel4);
+
         });
+    }
+
+    private void applyChangeForLevel(int level, Button button) {
+        boolean chooseLevel = false;
+        String filterParams = null;
+        switch (level) {
+            case 1:
+                chooseLevel = isAvailableLevel1;
+                filterParams = FilterParams.FILTER_BY_EXPENSIVE_LEVEL1;
+                break;
+            case 2:
+                chooseLevel = isAvailableLevel2;
+                filterParams = FilterParams.FILTER_BY_EXPENSIVE_LEVEL2;
+                break;
+            case 3:
+                chooseLevel = isAvailableLevel3;
+                filterParams = FilterParams.FILTER_BY_EXPENSIVE_LEVEL3;
+                break;
+            case 4:
+                chooseLevel = isAvailableLevel4;
+                filterParams = FilterParams.FILTER_BY_EXPENSIVE_LEVEL4;
+                break;
+            case 5:
+                chooseLevel = isSortByRelevance;
+                filterParams = FilterParams.SORT_BY_RELEVANCE;
+                break;
+        }
+        if (chooseLevel) {
+            highlightActiveElement(button);
+        } else {
+            setDefaultStyleElement(button);
+        }
+        saveParamInSettings(filterParams, chooseLevel);
     }
 
     @Override
@@ -114,7 +176,7 @@ public class FilterFragment extends BaseFragment {
         return false;
     }
 
-    private void saveParamInPreference(String tag, boolean value) {
+    private void saveParamInSettings(String tag, boolean value) {
         SharedPreferences.Editor editor = preferences.edit();
         editor.putBoolean(tag, value);
         editor.apply();
@@ -128,37 +190,40 @@ public class FilterFragment extends BaseFragment {
         editor.putBoolean(FilterParams.FILTER_BY_EXPENSIVE_LEVEL3, false);
         editor.putBoolean(FilterParams.FILTER_BY_EXPENSIVE_LEVEL4, false);
         editor.apply();
+        isAvailableLevel1 = false;
+        isAvailableLevel2 = false;
+        isAvailableLevel3 = false;
+        isAvailableLevel4 = false;
+        isSortByRelevance = true;
+        updateUIAccordingToFilterSettings();
     }
 
     private void updateUIAccordingToFilterSettings() {
-        isSortByRelevance = preferences.getBoolean(FilterParams.SORT_BY_RELEVANCE, true);
-        isAvailableLevel1 = preferences.getBoolean(FilterParams.FILTER_BY_EXPENSIVE_LEVEL1, false);
-        isAvailableLevel2 = preferences.getBoolean(FilterParams.FILTER_BY_EXPENSIVE_LEVEL2, false);
-        isAvailableLevel3 = preferences.getBoolean(FilterParams.FILTER_BY_EXPENSIVE_LEVEL3, false);
-        isAvailableLevel4 = preferences.getBoolean(FilterParams.FILTER_BY_EXPENSIVE_LEVEL4, false);
         if (isSortByRelevance) {
             highlightActiveElement(sortByRelevance);
+            setDefaultStyleElement(sortByDistance);
         } else {
             highlightActiveElement(sortByDistance);
+            setDefaultStyleElement(sortByRelevance);
         }
-        if (isAvailableLevel1) {
-            highlightActiveElement(filterByExpensiveLevel1);
-        }
-        if (isAvailableLevel2) {
-            highlightActiveElement(filterByExpensiveLevel2);
-        }
-        if (isAvailableLevel3) {
-            highlightActiveElement(filterByExpensiveLevel3);
-        }
-        if (isAvailableLevel4) {
-            highlightActiveElement(filterByExpensiveLevel4);
-        }
+        applyChangeForLevel(1, filterByExpensiveLevel1);
+        applyChangeForLevel(2, filterByExpensiveLevel2);
+        applyChangeForLevel(3, filterByExpensiveLevel3);
+        applyChangeForLevel(4, filterByExpensiveLevel4);
     }
 
     private void highlightActiveElement(Button button) {
         Resources resources = getResources();
         int colorBackground = resources.getColor(R.color.colorPrimary);
         int colorText = resources.getColor(R.color.white);
+        button.setBackgroundColor(colorBackground);
+        button.setTextColor(colorText);
+    }
+
+    private void setDefaultStyleElement(Button button) {
+        Resources resources = getResources();
+        int colorBackground = resources.getColor(R.color.white);
+        int colorText = resources.getColor(R.color.colorText);
         button.setBackgroundColor(colorBackground);
         button.setTextColor(colorText);
     }

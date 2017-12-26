@@ -47,7 +47,7 @@
 
     </LinearLayout>
 
-    <com.mashazavolnyuk.client.RatingView
+    <com.mashazavolnyuk.client.customview.RatingView
         android:id="@+id/rating"
         android:layout_width="30dp"
         android:layout_height="30dp"

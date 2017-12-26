@@ -5,5 +5,5 @@ import android.arch.lifecycle.LiveData;
 import com.mashazavolnyuk.client.data.Data;
 
 public interface IObserverListPlacesData {
-    void newData(LiveData<Data> dataLiveData);
+    void newData(LiveData<? extends Data> dataLiveData);
 }

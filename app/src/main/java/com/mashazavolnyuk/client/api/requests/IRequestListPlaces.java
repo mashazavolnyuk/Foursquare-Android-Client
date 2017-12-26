@@ -1,7 +1,9 @@
 package com.mashazavolnyuk.client.api.requests;
 
 import com.mashazavolnyuk.client.data.Data;
+import com.mashazavolnyuk.client.data.photos.PhotoResponseData;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.PATCH;
@@ -22,8 +24,11 @@ public interface IRequestListPlaces {
                                            @Query("venuePhotos") Integer isNeedPhoto);
 
     @GET("venues/{id}/photos?v=20182412")
-    Call<Data> getDetailedPhotosById(@Path("id") String idVenue,
-                                     @Query("client_id") String clientID,
-                                     @Query("client_secret") String clientSecret);
-
+    Call<String> getDetailedPhotosById(@Path("id") String idVenue,
+                                             @Query("client_id") String clientID,
+                                             @Query("client_secret") String clientSecret);
+    @GET("venues/{id}/photos?v=20182412")
+    Call<String> getDetailedPhotosTryById(@Path("id") String idVenue,
+                                       @Query("client_id") String clientID,
+                                       @Query("client_secret") String clientSecret);
 }
