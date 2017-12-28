@@ -98,7 +98,7 @@ public class AboutSelectedPlaceFragment extends BaseFragment {
 
     private void fillAboutPlace() {
         Venue venue = item.getVenue();
-        rating.setText(String.format(Locale.ENGLISH, "%.2f", venue.getRating()));
+        rating.setText(String.format(Locale.ENGLISH, "%.1f", venue.getRating()));
         rating.setBackgroundShapeColor(Color.parseColor("#" + venue.getRatingColor()));
         firstField.setText(venue.getName());
         secondField.setText(venue.getCategories().get(0).getPluralName());

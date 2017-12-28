@@ -40,6 +40,7 @@ import com.mashazavolnyuk.client.data.Data;
 import com.mashazavolnyuk.client.data.Group;
 import com.mashazavolnyuk.client.data.Item;
 import com.mashazavolnyuk.client.repositories.CallbackResponse;
+import com.mashazavolnyuk.client.utils.GeocoderUtil;
 import com.mashazavolnyuk.client.viewmodels.DetailAboutPlaceViewModel;
 import com.mashazavolnyuk.client.viewmodels.ListPlaceViewModel;
 
@@ -132,34 +133,15 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
     }
 
     private void saveLocation(Location location) {
-        double latitude = location.getLatitude();
-        double longitude = location.getLongitude();
-        try {
-            Geocoder geocoder = new Geocoder(getActivity(), Locale.getDefault());
-            List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
-            if (addresses != null && addresses.size() > 0) {
-                String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
-                String city = addresses.get(0).getLocality();
-                String state = addresses.get(0).getAdminArea();
-                String country = addresses.get(0).getCountryName();
-                String postalCode = addresses.get(0).getPostalCode();
-                String knownName = addresses.get(0).getFeatureName(); // Only if available else return NULL
-                Log.d(TAG, "getAddress:  address" + address);
-                Log.d(TAG, "getAddress:  city" + city);
-                Log.d(TAG, "getAddress:  state" + state);
-                Log.d(TAG, "getAddress:  postalCode" + postalCode);
-                Log.d(TAG, "getAddress:  knownName" + knownName);
-                UserLocation userLocation = new UserLocation();
-                userLocation.setAddress(address);
-                Gson gson = new Gson();
-                String jsonModel = gson.toJson(userLocation);
-                SharedPreferences.Editor editor = preferences.edit();
-                editor.putString(FilterParams.USER_LOCATION, jsonModel);
-                editor.apply();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        String address = GeocoderUtil.getAddressByLocation(getActivity(),location.getLatitude(),
+                location.getLongitude());
+        UserLocation userLocation = new UserLocation();
+        userLocation.setAddress(address);
+        Gson gson = new Gson();
+        String jsonModel = gson.toJson(userLocation);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(FilterParams.USER_LOCATION, jsonModel);
+        editor.apply();
     }
 
     @Override
