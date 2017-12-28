@@ -25,6 +25,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 
 public class ListPlacesAdapter extends RecyclerView.Adapter<ListPlacesAdapter.HolderAdapter> implements Filterable {
 
@@ -67,9 +70,11 @@ public class ListPlacesAdapter extends RecyclerView.Adapter<ListPlacesAdapter.Ho
         String address = venue.getLocation().getAddress();
         String valueForThirdPosition = kmValue + "," + address;
         holder.thirdPositionText.setText(valueForThirdPosition);
-        holder.rating.setText(String.format("%s", venue.getRating().toString()));
-        int color = Color.parseColor("#" + venue.getRatingColor());
-        holder.rating.setBackgroundShapeColor(color);
+        holder.rating.setText(String.format(Locale.ENGLISH, "%.1f", venue.getRating()));
+        if (venue.getRatingColor() != null) {
+            int color = Color.parseColor("#" + venue.getRatingColor());
+            holder.rating.setBackgroundShapeColor(color);
+        }
         holder.root.setOnClickListener(view -> iListPlacesOnClickListener.setItem(item));
     }
 
@@ -96,21 +101,22 @@ public class ListPlacesAdapter extends RecyclerView.Adapter<ListPlacesAdapter.Ho
     }
 
     class HolderAdapter extends RecyclerView.ViewHolder {
+        @BindView(R.id.rootList)
         LinearLayout root;
+        @BindView(R.id.photoPlace)
         ImageView photoPlace;
+        @BindView(R.id.firstPositionText)
         TextView firstPositionText;
+        @BindView(R.id.secondPositionText)
         TextView secondPositionText;
+        @BindView(R.id.thirdPositionText)
         TextView thirdPositionText;
+        @BindView(R.id.rating)
         RatingView rating;
 
         HolderAdapter(View view) {
             super(view);
-            root = view.findViewById(R.id.rootList);
-            photoPlace = view.findViewById(R.id.photoPlace);
-            firstPositionText = view.findViewById(R.id.firstPositionText);
-            secondPositionText = view.findViewById(R.id.secondPositionText);
-            thirdPositionText = view.findViewById(R.id.thirdPositionText);
-            rating = view.findViewById(R.id.rating);
+            ButterKnife.bind(this, view);
         }
     }
 

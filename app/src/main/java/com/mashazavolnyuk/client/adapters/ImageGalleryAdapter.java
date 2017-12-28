@@ -17,15 +17,19 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class ImageGalleryAdapter extends RecyclerView.Adapter<ImageGalleryAdapter.HolderAdapter> {
 
     private Context context;
     private List<PhotoItem> items;
 
-    public ImageGalleryAdapter(Context context,List<PhotoItem> items){
-        this.context =context;
-        this.items =items;
+    public ImageGalleryAdapter(Context context, List<PhotoItem> items) {
+        this.context = context;
+        this.items = items;
     }
+
     @Override
     public ImageGalleryAdapter.HolderAdapter onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
@@ -47,11 +51,12 @@ public class ImageGalleryAdapter extends RecyclerView.Adapter<ImageGalleryAdapte
     }
 
     class HolderAdapter extends RecyclerView.ViewHolder {
+        @BindView(R.id.photoVenue)
         ImageView photoVenue;
 
         HolderAdapter(View view) {
             super(view);
-            photoVenue = view.findViewById(R.id.photoVenue);
+            ButterKnife.bind(this, view);
 
         }
     }

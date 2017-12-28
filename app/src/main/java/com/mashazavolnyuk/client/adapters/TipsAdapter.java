@@ -17,6 +17,9 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class TipsAdapter extends RecyclerView.Adapter<TipsAdapter.HolderAdapter> {
     private Context context;
     private List<Tip> tipList;
@@ -68,21 +71,16 @@ public class TipsAdapter extends RecyclerView.Adapter<TipsAdapter.HolderAdapter>
     }
 
     class HolderAdapter extends RecyclerView.ViewHolder {
-        ImageView photoUser;
-        TextView messageUser;
-        TextView nameUser;
-        TextView dataMessage;
-        TextView countLike;
-        ImageView imageLikes;
+        @BindView(R.id.photoUser) ImageView photoUser;
+        @BindView(R.id.messageUser) TextView messageUser;
+        @BindView(R.id.nameUser) TextView nameUser;
+        @BindView(R.id.dataMessage) TextView dataMessage;
+        @BindView(R.id.countLike) TextView countLike;
+        @BindView(R.id.imageLikes)ImageView imageLikes;
 
         HolderAdapter(View view) {
             super(view);
-            photoUser = view.findViewById(R.id.photoUser);
-            messageUser = view.findViewById(R.id.messageUser);
-            nameUser = view.findViewById(R.id.nameUser);
-            dataMessage = view.findViewById(R.id.dataMessage);
-            countLike = view.findViewById(R.id.countLike);
-            imageLikes = view.findViewById(R.id.imageLikes);
+            ButterKnife.bind(this, view);
         }
     }
 }

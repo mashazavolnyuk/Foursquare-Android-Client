@@ -1,5 +1,6 @@
 package com.mashazavolnyuk.client.fragments;
 import android.annotation.SuppressLint;
+import android.app.Application;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -51,10 +52,10 @@ public class MapFragment extends BaseFragment implements OnMapReadyCallback,
     @Override
     public void onCameraIdle() {
         LatLng target = map.getCameraPosition().target;
-        showAddress(getActivity(), target.latitude, target.longitude);
+        showAddress(getActivity().getApplication(), target.latitude, target.longitude);
     }
 
-    public void showAddress(Context context, double latitude, double longitude) {
+    public void showAddress(Application context, double latitude, double longitude) {
         String address = GeocoderUtil.getAddressByLocation(context, latitude, longitude);
         if (address != null) {
             getActivity().setTitle(address);

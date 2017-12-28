@@ -3,12 +3,11 @@ package com.mashazavolnyuk.client.fragments;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.app.ProgressDialog;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -21,7 +20,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -36,37 +34,40 @@ import com.mashazavolnyuk.client.MainActivity;
 import com.mashazavolnyuk.client.R;
 import com.mashazavolnyuk.client.adapters.IListPlacesOnClickListener;
 import com.mashazavolnyuk.client.adapters.ListPlacesAdapter;
-import com.mashazavolnyuk.client.data.Data;
-import com.mashazavolnyuk.client.data.Group;
 import com.mashazavolnyuk.client.data.Item;
-import com.mashazavolnyuk.client.repositories.CallbackResponse;
 import com.mashazavolnyuk.client.utils.GeocoderUtil;
 import com.mashazavolnyuk.client.viewmodels.DetailAboutPlaceViewModel;
 import com.mashazavolnyuk.client.viewmodels.ListPlaceViewModel;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.Locale;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 
 
 public class MainListFragment extends BaseFragment implements SearchView.OnQueryTextListener,
         IListPlacesOnClickListener, LocationListener {
 
     private static final int LOCATION_REQUEST_CODE = 1;
+    @BindView(R.id.listPlaces)RecyclerView recyclerViewPlaces;
+
     private DetailAboutPlaceViewModel detailAboutPlaceViewMode;
     private ListPlaceViewModel listPlaceViewMode;
-    private RecyclerView recyclerViewPlaces;
+
     private LocationManager locationManager;
     private ListPlacesAdapter listPlacesAdapter;
     private SharedPreferences preferences;
     List<Item> listPlaces;
+    private Unbinder unbinder;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              Bundle savedInstanceState) {
+
         View view = inflater.inflate(R.layout.fragment_main_list, container, false);
-        recyclerViewPlaces = view.findViewById(R.id.listPlaces);
+        unbinder = ButterKnife.bind(this, view);
         setHasOptionsMenu(true);
         preferences = getActivity().getSharedPreferences("Filters", Context.MODE_PRIVATE);
         listPlaceViewMode = ViewModelProviders.of((FragmentActivity) getActivity()).get(
@@ -74,12 +75,26 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
         detailAboutPlaceViewMode = ViewModelProviders.of((FragmentActivity) getActivity()).get(
                 DetailAboutPlaceViewModel.class);
         listPlaces = listPlaceViewMode.getCache();
+        showDialog("Please wait", ProgressDialog.STYLE_SPINNER, false);
         if (listPlaces != null) {
             fillData(listPlaces);
         } else {
             tryStartFindLocation();
         }
         return view;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (getDialog() != null)
+            outState.putBoolean("isShowDialog", getDialog().isShowing());
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
     }
 
     private void tryStartFindLocation() {
@@ -122,18 +137,15 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
     @Override
     public void onLocationChanged(Location location) {
         saveLocation(location);
-        listPlaceViewMode.loadGroups(location.getLatitude(), location.getLongitude(), new CallbackResponse<List<Item>>() {
-            @Override
-            public void response(List<Item> data) {
-                listPlaces = data;
-                fillData(listPlaces);
-            }
+        listPlaceViewMode.loadGroups(location.getLatitude(), location.getLongitude(), data -> {
+            listPlaces = data;
+            fillData(listPlaces);
         });
         locationManager.removeUpdates(this);
     }
 
     private void saveLocation(Location location) {
-        String address = GeocoderUtil.getAddressByLocation(getActivity(),location.getLatitude(),
+        String address = GeocoderUtil.getAddressByLocation(getActivity().getApplication(), location.getLatitude(),
                 location.getLongitude());
         UserLocation userLocation = new UserLocation();
         userLocation.setAddress(address);
@@ -165,18 +177,12 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
         final MenuItem item = menu.findItem(R.id.action_search);
         final SearchView searchView = (SearchView) item.getActionView();
         searchView.setOnQueryTextListener(this);
-        searchView.setOnSearchClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        searchView.setOnSearchClickListener(view -> {
 
-            }
         });
-        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
-            @Override
-            public boolean onClose() {
-                //Search View is collapsed
-                return false;
-            }
+        searchView.setOnCloseListener(() -> {
+            //Search View is collapsed
+            return false;
         });
         searchView.setOnQueryTextListener(this);
     }
@@ -215,6 +221,7 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
         listPlacesAdapter = new ListPlacesAdapter(getActivity(), listPlaces, this);
         recyclerViewPlaces.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerViewPlaces.setAdapter(listPlacesAdapter);
+        hideDialog();
     }
 
     @Override

@@ -25,38 +25,43 @@ import com.mashazavolnyuk.client.viewmodels.DetailAboutPlaceViewModel;
 import java.util.List;
 import java.util.Locale;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
+
 
 public class AboutSelectedPlaceFragment extends BaseFragment {
 
-    TextView firstField;
-    TextView secondField;
-    TextView thirdField;
-    TextView textCurrency;
-    RatingView rating;
-    ImageView imageMap;
-    RecyclerView recyclerViewTips;
+    @BindView(R.id.firstPositionText) TextView firstField;
+    @BindView(R.id.secondPositionText) TextView secondField;
+    @BindView(R.id.thirdPositionText) TextView thirdField;
+    @BindView(R.id.textCurrency) TextView textCurrency;
+    @BindView(R.id.rating) RatingView rating;
+    @BindView(R.id.imageMapSelectedPlace) ImageView imageMap;
+    @BindView(R.id.listTips) RecyclerView recyclerViewTips;
+    @BindView(R.id.listGallery) RecyclerView recyclerViewGallery;
+
+    private Unbinder unbinder;
     Item item;
     DetailAboutPlaceViewModel model;
-    RecyclerView recyclerView;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_about_selected_place, container, false);
-        imageMap = view.findViewById(R.id.imageMapSelectedPlace);
-        recyclerView = view.findViewById(R.id.listGallery);
-        rating = view.findViewById(R.id.rating);
-        firstField = view.findViewById(R.id.firstPositionText);
-        secondField = view.findViewById(R.id.secondPositionText);
-        thirdField = view.findViewById(R.id.thirdPositionText);
-        textCurrency = view.findViewById(R.id.textCurrency);
+        unbinder = ButterKnife.bind(this, view);
         model = ViewModelProviders.of((FragmentActivity)
                 getActivity()).get(DetailAboutPlaceViewModel.class);
         item = model.getSelected().getValue();
-        recyclerViewTips = view.findViewById(R.id.listTips);
         fillData();
         return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
     }
 
     private void fillData() {
@@ -82,8 +87,8 @@ public class AboutSelectedPlaceFragment extends BaseFragment {
                 LinearLayoutManager horizontalLayoutManagaer
                         = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
                 ImageGalleryAdapter galleryAdapter = new ImageGalleryAdapter(getActivity(), response);
-                recyclerView.setLayoutManager(horizontalLayoutManagaer);
-                recyclerView.setAdapter(galleryAdapter);
+                recyclerViewGallery.setLayoutManager(horizontalLayoutManagaer);
+                recyclerViewGallery.setAdapter(galleryAdapter);
             }
         });
 

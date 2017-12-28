@@ -21,16 +21,19 @@ import com.mashazavolnyuk.client.R;
 import com.mashazavolnyuk.client.data.locationUser.UserLocation;
 import com.mashazavolnyuk.client.filter.FilterParams;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
+
 public class FilterFragment extends BaseFragment {
 
-    TextView selectPlaceAndRadius;
-    SharedPreferences preferences;
-    Button sortByRelevance;
-    Button sortByDistance;
-    Button filterByExpensiveLevel1;
-    Button filterByExpensiveLevel2;
-    Button filterByExpensiveLevel3;
-    Button filterByExpensiveLevel4;
+    @BindView(R.id.selectPlaceAndRadius) TextView selectPlaceAndRadius;
+    @BindView((R.id.sortByRelevance)) Button sortByRelevance;
+    @BindView((R.id.sortByDistance)) Button sortByDistance;
+    @BindView((R.id.filterByExpensiveLevel1)) Button filterByExpensiveLevel1;
+    @BindView((R.id.filterByExpensiveLevel2))Button filterByExpensiveLevel2;
+    @BindView((R.id.filterByExpensiveLevel3))Button filterByExpensiveLevel3;
+    @BindView((R.id.filterByExpensiveLevel4))Button filterByExpensiveLevel4;
 
     boolean isAvailableLevel1;
     boolean isAvailableLevel2;
@@ -40,32 +43,24 @@ public class FilterFragment extends BaseFragment {
     UserLocation userLocation;
     TextView hereNow;
 
+    SharedPreferences preferences;
+    private Unbinder unbinder;
+
+
     @SuppressLint("CommitPrefEdits")
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_filter, container, false);
+        unbinder = ButterKnife.bind(this, view);
         setHasOptionsMenu(true);
-        sortByRelevance = view.findViewById(R.id.sortByRelevance);
-        sortByDistance = view.findViewById(R.id.sortByDistance);
-        filterByExpensiveLevel1 = view.findViewById(R.id.filterByExpensiveLevel1);
-        filterByExpensiveLevel2 = view.findViewById(R.id.filterByExpensiveLevel2);
-        filterByExpensiveLevel3 = view.findViewById(R.id.filterByExpensiveLevel3);
-        filterByExpensiveLevel4 = view.findViewById(R.id.filterByExpensiveLevel4);
         hereNow = view.findViewById(R.id.hereNow);
         preferences = getActivity().getSharedPreferences("Filters", Context.MODE_PRIVATE);
         initValueFromPreference();
         updateUIAccordingToFilterSettings();
         setListeners();
-        selectPlaceAndRadius = view.findViewById(R.id.selectPlaceAndRadius);
-        selectPlaceAndRadius.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ((MainActivity) getActivity()).goToMap();
-            }
-        });
-
+        selectPlaceAndRadius.setOnClickListener(view1 -> ((MainActivity) getActivity()).goToMap());
         return view;
     }
 
@@ -75,11 +70,16 @@ public class FilterFragment extends BaseFragment {
         isAvailableLevel2 = preferences.getBoolean(FilterParams.FILTER_BY_EXPENSIVE_LEVEL2, false);
         isAvailableLevel3 = preferences.getBoolean(FilterParams.FILTER_BY_EXPENSIVE_LEVEL3, false);
         isAvailableLevel4 = preferences.getBoolean(FilterParams.FILTER_BY_EXPENSIVE_LEVEL4, false);
-
         Gson gson = new Gson();
         String jsonModel = preferences.getString(FilterParams.USER_LOCATION, "");
         userLocation = gson.fromJson(jsonModel, UserLocation.class);
 
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
     }
 
     private void setListeners() {
