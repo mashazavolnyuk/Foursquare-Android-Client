@@ -5,7 +5,10 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -18,6 +21,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,7 +29,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.mashazavolnyuk.client.repositories.IObserverFinishedLoadingPlace;
+import com.google.gson.Gson;
+import com.mashazavolnyuk.client.data.locationUser.UserLocation;
+import com.mashazavolnyuk.client.filter.FilterParams;
 import com.mashazavolnyuk.client.MainActivity;
 import com.mashazavolnyuk.client.R;
 import com.mashazavolnyuk.client.adapters.IListPlacesOnClickListener;
@@ -33,10 +39,13 @@ import com.mashazavolnyuk.client.adapters.ListPlacesAdapter;
 import com.mashazavolnyuk.client.data.Data;
 import com.mashazavolnyuk.client.data.Group;
 import com.mashazavolnyuk.client.data.Item;
+import com.mashazavolnyuk.client.repositories.CallbackResponse;
 import com.mashazavolnyuk.client.viewmodels.DetailAboutPlaceViewModel;
 import com.mashazavolnyuk.client.viewmodels.ListPlaceViewModel;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 
 
 public class MainListFragment extends BaseFragment implements SearchView.OnQueryTextListener,
@@ -45,24 +54,27 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
     private static final int LOCATION_REQUEST_CODE = 1;
     private DetailAboutPlaceViewModel detailAboutPlaceViewMode;
     private ListPlaceViewModel listPlaceViewMode;
-    private RecyclerView listPlaces;
+    private RecyclerView recyclerViewPlaces;
     private LocationManager locationManager;
     private ListPlacesAdapter listPlacesAdapter;
+    private SharedPreferences preferences;
+    List<Item> listPlaces;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main_list, container, false);
-        listPlaces = view.findViewById(R.id.listPlaces);
+        recyclerViewPlaces = view.findViewById(R.id.listPlaces);
         setHasOptionsMenu(true);
+        preferences = getActivity().getSharedPreferences("Filters", Context.MODE_PRIVATE);
         listPlaceViewMode = ViewModelProviders.of((FragmentActivity) getActivity()).get(
                 ListPlaceViewModel.class);
         detailAboutPlaceViewMode = ViewModelProviders.of((FragmentActivity) getActivity()).get(
                 DetailAboutPlaceViewModel.class);
-        List<Group> groups = listPlaceViewMode.getCache();
-        if (groups != null) {
-            fillData(groups.get(0));
+        listPlaces = listPlaceViewMode.getCache();
+        if (listPlaces != null) {
+            fillData(listPlaces);
         } else {
             tryStartFindLocation();
         }
@@ -108,13 +120,46 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
 
     @Override
     public void onLocationChanged(Location location) {
-        listPlaceViewMode.loadGroups(location.getLatitude(), location.getLongitude(), new IObserverFinishedLoadingPlace() {
+        saveLocation(location);
+        listPlaceViewMode.loadGroups(location.getLatitude(), location.getLongitude(), new CallbackResponse<List<Item>>() {
             @Override
-            public void loadedData(Data data) {
-                fillData(data.getResponse().getGroups().get(0));
+            public void response(List<Item> data) {
+                listPlaces = data;
+                fillData(listPlaces);
             }
         });
         locationManager.removeUpdates(this);
+    }
+
+    private void saveLocation(Location location) {
+        double latitude = location.getLatitude();
+        double longitude = location.getLongitude();
+        try {
+            Geocoder geocoder = new Geocoder(getActivity(), Locale.getDefault());
+            List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
+            if (addresses != null && addresses.size() > 0) {
+                String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+                String city = addresses.get(0).getLocality();
+                String state = addresses.get(0).getAdminArea();
+                String country = addresses.get(0).getCountryName();
+                String postalCode = addresses.get(0).getPostalCode();
+                String knownName = addresses.get(0).getFeatureName(); // Only if available else return NULL
+                Log.d(TAG, "getAddress:  address" + address);
+                Log.d(TAG, "getAddress:  city" + city);
+                Log.d(TAG, "getAddress:  state" + state);
+                Log.d(TAG, "getAddress:  postalCode" + postalCode);
+                Log.d(TAG, "getAddress:  knownName" + knownName);
+                UserLocation userLocation = new UserLocation();
+                userLocation.setAddress(address);
+                Gson gson = new Gson();
+                String jsonModel = gson.toJson(userLocation);
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putString(FilterParams.USER_LOCATION, jsonModel);
+                editor.apply();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -131,31 +176,6 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
     public void onProviderDisabled(String s) {
 
     }
-
-
-//        FusedLocationProviderClient mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
-//        mFusedLocationProviderClient.getLastLocation()
-//                .addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
-//                    @Override
-//                    public void onSuccess(Location location) {
-//                        // Got last known location. In some rare situations this can be null.
-//                        if (location != null) {
-//                            testRequest(location.getLatitude(), location.getLongitude());
-//                        }
-//                    }
-//                });
-//
-//        Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-//}
-
-//    private void onLocationUpdate(Location location){
-//        showToast("" + location.getLatitude() + "" + location.getLongitude());
-//        if(locationListener != null) {
-//            locationManager.removeUpdates(locationListener);
-//            locationListener = null;
-//        }
-//        testRequest(location.getLatitude(), location.getLongitude());
-//    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -209,10 +229,10 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
         }
     }
 
-    private void fillData(Group groupPlaces) {
-        listPlacesAdapter = new ListPlacesAdapter(getActivity(), groupPlaces.getItems(), this);
-        listPlaces.setLayoutManager(new LinearLayoutManager(getActivity()));
-        listPlaces.setAdapter(listPlacesAdapter);
+    private void fillData(List<Item> listPlaces) {
+        listPlacesAdapter = new ListPlacesAdapter(getActivity(), listPlaces, this);
+        recyclerViewPlaces.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerViewPlaces.setAdapter(listPlacesAdapter);
     }
 
     @Override

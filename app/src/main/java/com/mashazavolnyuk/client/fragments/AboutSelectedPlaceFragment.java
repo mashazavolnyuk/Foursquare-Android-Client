@@ -1,14 +1,10 @@
 package com.mashazavolnyuk.client.fragments;
 
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModelProviders;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -21,28 +17,17 @@ import com.mashazavolnyuk.client.R;
 import com.mashazavolnyuk.client.adapters.ImageGalleryAdapter;
 import com.mashazavolnyuk.client.customview.RatingView;
 import com.mashazavolnyuk.client.adapters.TipsAdapter;
-import com.mashazavolnyuk.client.api.RetrofitClient;
-import com.mashazavolnyuk.client.api.requests.IRequestStaticMap;
 import com.mashazavolnyuk.client.data.Item;
 import com.mashazavolnyuk.client.data.Tip;
 import com.mashazavolnyuk.client.data.Venue;
-import com.mashazavolnyuk.client.data.photos.DetailedPhoto;
-import com.mashazavolnyuk.client.data.photos.PhotoItem;
-import com.mashazavolnyuk.client.repositories.IObserverDetailedPhoto;
 import com.mashazavolnyuk.client.viewmodels.DetailAboutPlaceViewModel;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class AboutSelectedPlaceFragment extends BaseFragment {
 
-    ViewPager viewPager;
     TextView firstField;
     TextView secondField;
     TextView thirdField;
@@ -60,7 +45,7 @@ public class AboutSelectedPlaceFragment extends BaseFragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_about_selected_place, container, false);
         imageMap = view.findViewById(R.id.imageMapSelectedPlace);
-        recyclerView =view.findViewById(R.id.listGallery);
+        recyclerView = view.findViewById(R.id.listGallery);
         rating = view.findViewById(R.id.rating);
         firstField = view.findViewById(R.id.firstPositionText);
         secondField = view.findViewById(R.id.secondPositionText);
@@ -70,11 +55,15 @@ public class AboutSelectedPlaceFragment extends BaseFragment {
                 getActivity()).get(DetailAboutPlaceViewModel.class);
         item = model.getSelected().getValue();
         recyclerViewTips = view.findViewById(R.id.listTips);
+        fillData();
+        return view;
+    }
+
+    private void fillData() {
         fillTestData(item);
         fillGallery();
         fillListTips();
         fillAboutPlace();
-        return view;
     }
 
     private void fillTestData(Item item) {
@@ -83,42 +72,16 @@ public class AboutSelectedPlaceFragment extends BaseFragment {
     }
 
     private void loadStaticGoogleMap(Venue venue) {
-        Double lat = venue.getLocation().getLat();
-        Double lng = venue.getLocation().getLng();
-        String markerStyle = String.format(Locale.ENGLISH, "color:blue|%.0f,%.0f|size:mid|label:S", lat, lng);
-        RetrofitClient.changeApiBaseUrl("https://maps.googleapis.com/");
-        IRequestStaticMap iRequestListPlaces = RetrofitClient.getRetrofit().create(IRequestStaticMap.class);
-        iRequestListPlaces.getStaticGoogleMap(lat + "," + lng, "640x400", "15",
-                markerStyle, "AIzaSyDMofTdX08zRW6ldhaPiCPhA6tz5dz_PVQ")
-                .enqueue(new Callback<ResponseBody>() {
-                    @Override
-                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                        try {
-                            byte[] bytes = response.body().bytes();
-                            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                            imageMap.setImageBitmap(bitmap);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<ResponseBody> call, Throwable t) {
-
-                    }
-                });
+        model.loadStaticGoogleMap(venue, map -> imageMap.setImageBitmap(map));
     }
 
     private void fillGallery() {
         Venue venue = item.getVenue();
-        model.getPhotoByIdVenue(venue.getId(), new IObserverDetailedPhoto() {
-            @Override
-            public void newData(LiveData<DetailedPhoto> dataLiveData) {
-                DetailedPhoto detailedPhoto = dataLiveData.getValue();
-                List<PhotoItem> photoItems = detailedPhoto.getItems();
+        model.getPhotoByIdVenue(venue.getId(), response -> {
+            if (response != null) {
                 LinearLayoutManager horizontalLayoutManagaer
                         = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
-                ImageGalleryAdapter galleryAdapter = new ImageGalleryAdapter(getActivity(), photoItems);
+                ImageGalleryAdapter galleryAdapter = new ImageGalleryAdapter(getActivity(), response);
                 recyclerView.setLayoutManager(horizontalLayoutManagaer);
                 recyclerView.setAdapter(galleryAdapter);
             }
@@ -135,7 +98,7 @@ public class AboutSelectedPlaceFragment extends BaseFragment {
 
     private void fillAboutPlace() {
         Venue venue = item.getVenue();
-        rating.setText(venue.getRating().toString());
+        rating.setText(String.format(Locale.ENGLISH, "%.2f", venue.getRating()));
         rating.setBackgroundShapeColor(Color.parseColor("#" + venue.getRatingColor()));
         firstField.setText(venue.getName());
         secondField.setText(venue.getCategories().get(0).getPluralName());

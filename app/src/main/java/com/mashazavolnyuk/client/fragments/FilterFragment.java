@@ -15,8 +15,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
 import com.mashazavolnyuk.client.MainActivity;
 import com.mashazavolnyuk.client.R;
+import com.mashazavolnyuk.client.data.locationUser.UserLocation;
 import com.mashazavolnyuk.client.filter.FilterParams;
 
 public class FilterFragment extends BaseFragment {
@@ -35,6 +37,8 @@ public class FilterFragment extends BaseFragment {
     boolean isAvailableLevel3;
     boolean isAvailableLevel4;
     boolean isSortByRelevance;
+    UserLocation userLocation;
+    TextView hereNow;
 
     @SuppressLint("CommitPrefEdits")
     @Nullable
@@ -49,6 +53,7 @@ public class FilterFragment extends BaseFragment {
         filterByExpensiveLevel2 = view.findViewById(R.id.filterByExpensiveLevel2);
         filterByExpensiveLevel3 = view.findViewById(R.id.filterByExpensiveLevel3);
         filterByExpensiveLevel4 = view.findViewById(R.id.filterByExpensiveLevel4);
+        hereNow = view.findViewById(R.id.hereNow);
         preferences = getActivity().getSharedPreferences("Filters", Context.MODE_PRIVATE);
         initValueFromPreference();
         updateUIAccordingToFilterSettings();
@@ -70,6 +75,11 @@ public class FilterFragment extends BaseFragment {
         isAvailableLevel2 = preferences.getBoolean(FilterParams.FILTER_BY_EXPENSIVE_LEVEL2, false);
         isAvailableLevel3 = preferences.getBoolean(FilterParams.FILTER_BY_EXPENSIVE_LEVEL3, false);
         isAvailableLevel4 = preferences.getBoolean(FilterParams.FILTER_BY_EXPENSIVE_LEVEL4, false);
+
+        Gson gson = new Gson();
+        String jsonModel = preferences.getString(FilterParams.USER_LOCATION, "");
+        userLocation = gson.fromJson(jsonModel, UserLocation.class);
+
     }
 
     private void setListeners() {
@@ -210,6 +220,7 @@ public class FilterFragment extends BaseFragment {
         applyChangeForLevel(2, filterByExpensiveLevel2);
         applyChangeForLevel(3, filterByExpensiveLevel3);
         applyChangeForLevel(4, filterByExpensiveLevel4);
+        hereNow.setText(userLocation.getAddress());
     }
 
     private void highlightActiveElement(Button button) {

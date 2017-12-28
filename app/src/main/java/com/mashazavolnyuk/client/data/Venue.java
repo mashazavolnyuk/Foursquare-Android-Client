@@ -1,11 +1,14 @@
 package com.mashazavolnyuk.client.data;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class Venue {
+public class Venue  {
     @SerializedName("id")
     @Expose
     private String id;
@@ -60,6 +63,28 @@ public class Venue {
     @SerializedName("featuredPhotos")
     @Expose
     private FeaturedPhotos featuredPhotos;
+
+    protected Venue(Parcel in) {
+        id = in.readString();
+        name = in.readString();
+        byte tmpVerified = in.readByte();
+        verified = tmpVerified == 0 ? null : tmpVerified == 1;
+        url = in.readString();
+        if (in.readByte() == 0) {
+            rating = null;
+        } else {
+            rating = in.readDouble();
+        }
+        ratingColor = in.readString();
+        if (in.readByte() == 0) {
+            ratingSignals = null;
+        } else {
+            ratingSignals = in.readInt();
+        }
+        byte tmpAllowMenuUrlEdit = in.readByte();
+        allowMenuUrlEdit = tmpAllowMenuUrlEdit == 0 ? null : tmpAllowMenuUrlEdit == 1;
+    }
+
 
     public String getId() {
         return id;
@@ -204,5 +229,4 @@ public class Venue {
     public void setFeaturedPhotos(FeaturedPhotos featuredPhotos) {
         this.featuredPhotos = featuredPhotos;
     }
-
 }
