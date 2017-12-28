@@ -28,6 +28,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.gson.Gson;
+import com.mashazavolnyuk.client.data.locationUser.BaseLocation;
+import com.mashazavolnyuk.client.data.locationUser.SelectedLocation;
 import com.mashazavolnyuk.client.data.locationUser.UserLocation;
 import com.mashazavolnyuk.client.filter.FilterParams;
 import com.mashazavolnyuk.client.MainActivity;
@@ -50,16 +52,17 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
         IListPlacesOnClickListener, LocationListener {
 
     private static final int LOCATION_REQUEST_CODE = 1;
-    @BindView(R.id.listPlaces)RecyclerView recyclerViewPlaces;
-
+    @BindView(R.id.listPlaces)
+    RecyclerView recyclerViewPlaces;
     private DetailAboutPlaceViewModel detailAboutPlaceViewMode;
     private ListPlaceViewModel listPlaceViewMode;
-
     private LocationManager locationManager;
     private ListPlacesAdapter listPlacesAdapter;
     private SharedPreferences preferences;
-    List<Item> listPlaces;
+    private List<Item> listPlaces;
+    private BaseLocation baseLocation;
     private Unbinder unbinder;
+
 
     @Nullable
     @Override
@@ -75,13 +78,30 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
         detailAboutPlaceViewMode = ViewModelProviders.of((FragmentActivity) getActivity()).get(
                 DetailAboutPlaceViewModel.class);
         listPlaces = listPlaceViewMode.getCache();
+        baseLocation = getBaseLocation();
         showDialog("Please wait", ProgressDialog.STYLE_SPINNER, false);
-        if (listPlaces != null) {
+        if (listPlaces != null && listPlaces.size() > 0) {
             fillData(listPlaces);
         } else {
             tryStartFindLocation();
         }
         return view;
+    }
+
+    private BaseLocation getBaseLocation() {
+        Gson gson = new Gson();
+        String userLocationModel = preferences.getString(FilterParams.USER_LOCATION, "");
+        String selectedLocationModel = preferences.getString(FilterParams.SELECTED_LOCATION, "");
+        if (!selectedLocationModel.isEmpty()) {
+            baseLocation = gson.fromJson(selectedLocationModel, SelectedLocation.class);
+            return baseLocation;
+        } else {
+            if (!userLocationModel.isEmpty()) {
+                baseLocation = gson.fromJson(userLocationModel, UserLocation.class);
+                return baseLocation;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -125,23 +145,31 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
 
     @SuppressLint("MissingPermission")
     private void startFindLocation() {
-        locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-        if (locationManager != null) {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                    100 * 10, 10, this);
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
-                    100 * 10, 10, this);
+        if (baseLocation != null) {
+            loadPlacesByLocation(baseLocation.getLatitude(), baseLocation.getLatitude());
+        } else {
+            locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+            if (locationManager != null) {
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                        100 * 10, 10, this);
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
+                        100 * 10, 10, this);
+            }
         }
     }
 
     @Override
     public void onLocationChanged(Location location) {
         saveLocation(location);
-        listPlaceViewMode.loadGroups(location.getLatitude(), location.getLongitude(), data -> {
+        loadPlacesByLocation(location.getLatitude(), location.getLongitude());
+        locationManager.removeUpdates(this);
+    }
+
+    private void loadPlacesByLocation(double latitude, double longitude) {
+        listPlaceViewMode.loadGroups(latitude, longitude, data -> {
             listPlaces = data;
             fillData(listPlaces);
         });
-        locationManager.removeUpdates(this);
     }
 
     private void saveLocation(Location location) {

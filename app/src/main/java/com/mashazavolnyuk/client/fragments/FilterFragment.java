@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.mashazavolnyuk.client.MainActivity;
 import com.mashazavolnyuk.client.R;
+import com.mashazavolnyuk.client.data.locationUser.SelectedLocation;
 import com.mashazavolnyuk.client.data.locationUser.UserLocation;
 import com.mashazavolnyuk.client.filter.FilterParams;
 
@@ -27,13 +28,20 @@ import butterknife.Unbinder;
 
 public class FilterFragment extends BaseFragment {
 
-    @BindView(R.id.selectPlaceAndRadius) TextView selectPlaceAndRadius;
-    @BindView((R.id.sortByRelevance)) Button sortByRelevance;
-    @BindView((R.id.sortByDistance)) Button sortByDistance;
-    @BindView((R.id.filterByExpensiveLevel1)) Button filterByExpensiveLevel1;
-    @BindView((R.id.filterByExpensiveLevel2))Button filterByExpensiveLevel2;
-    @BindView((R.id.filterByExpensiveLevel3))Button filterByExpensiveLevel3;
-    @BindView((R.id.filterByExpensiveLevel4))Button filterByExpensiveLevel4;
+    @BindView(R.id.selectPlaceAndRadius)
+    TextView selectPlaceAndRadius;
+    @BindView((R.id.sortByRelevance))
+    Button sortByRelevance;
+    @BindView((R.id.sortByDistance))
+    Button sortByDistance;
+    @BindView((R.id.filterByExpensiveLevel1))
+    Button filterByExpensiveLevel1;
+    @BindView((R.id.filterByExpensiveLevel2))
+    Button filterByExpensiveLevel2;
+    @BindView((R.id.filterByExpensiveLevel3))
+    Button filterByExpensiveLevel3;
+    @BindView((R.id.filterByExpensiveLevel4))
+    Button filterByExpensiveLevel4;
 
     boolean isAvailableLevel1;
     boolean isAvailableLevel2;
@@ -41,6 +49,7 @@ public class FilterFragment extends BaseFragment {
     boolean isAvailableLevel4;
     boolean isSortByRelevance;
     UserLocation userLocation;
+    SelectedLocation selectedLocation;
     TextView hereNow;
 
     SharedPreferences preferences;
@@ -71,9 +80,10 @@ public class FilterFragment extends BaseFragment {
         isAvailableLevel3 = preferences.getBoolean(FilterParams.FILTER_BY_EXPENSIVE_LEVEL3, false);
         isAvailableLevel4 = preferences.getBoolean(FilterParams.FILTER_BY_EXPENSIVE_LEVEL4, false);
         Gson gson = new Gson();
-        String jsonModel = preferences.getString(FilterParams.USER_LOCATION, "");
-        userLocation = gson.fromJson(jsonModel, UserLocation.class);
-
+        String userLocationModel = preferences.getString(FilterParams.USER_LOCATION, "");
+        String selectedLocationModel = preferences.getString(FilterParams.SELECTED_LOCATION, "");
+        this.userLocation = gson.fromJson(userLocationModel, UserLocation.class);
+        selectedLocation = gson.fromJson(selectedLocationModel, SelectedLocation.class);
     }
 
     @Override
@@ -220,7 +230,11 @@ public class FilterFragment extends BaseFragment {
         applyChangeForLevel(2, filterByExpensiveLevel2);
         applyChangeForLevel(3, filterByExpensiveLevel3);
         applyChangeForLevel(4, filterByExpensiveLevel4);
-        hereNow.setText(userLocation.getAddress());
+        if (selectedLocation != null) {
+            hereNow.setText(selectedLocation.getAddress());
+        } else {
+            hereNow.setText(userLocation.getAddress());
+        }
     }
 
     private void highlightActiveElement(Button button) {

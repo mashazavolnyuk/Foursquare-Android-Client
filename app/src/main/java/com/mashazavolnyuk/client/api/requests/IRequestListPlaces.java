@@ -17,18 +17,24 @@ public interface IRequestListPlaces {
                              @Query("client_secret") String clientSecret,
                              @Query("ll") String s);
 
-    @GET("venues/explore?v=20182412&limit=100")
+    @GET("venues/explore?v=20182412&limit=150")
     Call<Data> getListRecommendationPlaces(@Query("client_id") String clientID,
                                            @Query("client_secret") String clientSecret,
                                            @Query("ll") String s,
-                                           @Query("venuePhotos") Integer isNeedPhoto);
+                                           @Query("venuePhotos") Integer isNeedPhoto
+//                                           @Query("sortByDistance") int isSortByDistance,
+//                                           @Query("price") String listPrice
+    );
 
     @GET("venues/{id}/photos?v=20182412")
     Call<String> getDetailedPhotosById(@Path("id") String idVenue,
-                                             @Query("client_id") String clientID,
-                                             @Query("client_secret") String clientSecret);
+                                       @Query("client_id") String clientID,
+                                       @Query("client_secret") String clientSecret
+    );
+
     @GET("venues/{id}/photos?v=20182412")
     Call<String> getDetailedPhotosTryById(@Path("id") String idVenue,
-                                       @Query("client_id") String clientID,
-                                       @Query("client_secret") String clientSecret);
+                                          @Query("client_id") String clientID,
+                                          @Query("client_secret") String clientSecret,
+                                          @Query("sortByDistance") int isSortByDistance);
 }

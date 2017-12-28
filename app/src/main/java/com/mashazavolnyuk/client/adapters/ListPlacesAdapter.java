@@ -22,6 +22,8 @@ import com.mashazavolnyuk.client.data.Venue;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -43,6 +45,7 @@ public class ListPlacesAdapter extends RecyclerView.Adapter<ListPlacesAdapter.Ho
         this.filterList = data;
         this.iListPlacesOnClickListener = iListPlacesOnClickListener;
     }
+
 
     @Override
     public ListPlacesAdapter.HolderAdapter onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -91,6 +94,7 @@ public class ListPlacesAdapter extends RecyclerView.Adapter<ListPlacesAdapter.Ho
             return 0;
         }
     }
+
 
     @Override
     public Filter getFilter() {
