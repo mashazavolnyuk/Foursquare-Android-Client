@@ -17,6 +17,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -54,6 +55,8 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
     private static final int LOCATION_REQUEST_CODE = 1;
     @BindView(R.id.listPlaces)
     RecyclerView recyclerViewPlaces;
+    @BindView(R.id.swipeRefreshLayout)
+    SwipeRefreshLayout swipeRefreshLayout;
     private DetailAboutPlaceViewModel detailAboutPlaceViewMode;
     private ListPlaceViewModel listPlaceViewMode;
     private LocationManager locationManager;
@@ -62,6 +65,7 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
     private List<Item> listPlaces;
     private BaseLocation baseLocation;
     private Unbinder unbinder;
+
 
 
     @Nullable
@@ -79,6 +83,7 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
                 DetailAboutPlaceViewModel.class);
         listPlaces = listPlaceViewMode.getCache();
         baseLocation = getBaseLocation();
+        setListeners();
         showDialog("Please wait", ProgressDialog.STYLE_SPINNER, false);
         if (listPlaces != null && listPlaces.size() > 0) {
             fillData(listPlaces);
@@ -86,6 +91,15 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
             tryStartFindLocation();
         }
         return view;
+    }
+
+    private void setListeners(){
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                tryStartFindLocation();
+            }
+        });
     }
 
     private BaseLocation getBaseLocation() {
@@ -169,6 +183,7 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
         listPlaceViewMode.loadGroups(latitude, longitude, data -> {
             listPlaces = data;
             fillData(listPlaces);
+            swipeRefreshLayout.setRefreshing(false);
         });
     }
 
