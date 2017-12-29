@@ -5,7 +5,7 @@
     android:orientation="vertical">
 
     <com.google.android.gms.maps.MapView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/map_dashBoard"
+        android:id="@+id/map_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
@@ -16,4 +16,35 @@
         android:contentDescription="@string/google_map"
         android:src="@drawable/ic_location" />
 
+    <ImageView
+        android:layout_width="320dp"
+        android:layout_height="320dp"
+        android:layout_centerInParent="true"
+        android:src="@drawable/map_circle" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/radiusSeekBar"
+        android:layout_margin="10dp"
+        android:text="@string/radius_min" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/radiusSeekBar"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_margin="10dp"
+        android:text="@string/radius_max" />
+
+    <SeekBar
+        android:id="@+id/radiusSeekBar"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="10dp"
+        android:max="10"
+        android:progressDrawable="@drawable/seekbar_style"
+        android:thumb="@drawable/custom_thumb" />
 </RelativeLayout>

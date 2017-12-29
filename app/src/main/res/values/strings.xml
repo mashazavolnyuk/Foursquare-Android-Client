@@ -24,4 +24,6 @@
     <string name="photouser">photoUser</string>
     <string name="like">like</string>
     <string name="reset">reset</string>
+    <string name="radius_min">0.5km</string>
+    <string name="radius_max">100km</string>
 </resources>

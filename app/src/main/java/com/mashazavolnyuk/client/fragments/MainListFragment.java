@@ -54,10 +54,8 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
         IListPlacesOnClickListener, LocationListener {
 
     private static final int LOCATION_REQUEST_CODE = 1;
-    @BindView(R.id.listPlaces)
-    RecyclerView recyclerViewPlaces;
-    @BindView(R.id.swipeRefreshLayout)
-    SwipeRefreshLayout swipeRefreshLayout;
+    @BindView(R.id.listPlaces)RecyclerView recyclerViewPlaces;
+    @BindView(R.id.swipeRefreshLayout) SwipeRefreshLayout swipeRefreshLayout;
     private DetailAboutPlaceViewModel detailAboutPlaceViewMode;
     private ListPlaceViewModel listPlaceViewMode;
     private LocationManager locationManager;
@@ -66,7 +64,6 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
     private List<Item> listPlaces;
     private BaseLocation baseLocation;
     private Unbinder unbinder;
-
 
     @Nullable
     @Override

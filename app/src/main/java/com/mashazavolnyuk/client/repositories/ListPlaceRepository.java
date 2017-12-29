@@ -6,7 +6,9 @@ import com.mashazavolnyuk.client.api.RetrofitClient;
 import com.mashazavolnyuk.client.api.requests.IRequestListPlaces;
 import com.mashazavolnyuk.client.data.Data;
 import com.mashazavolnyuk.client.data.Item;
+import com.mashazavolnyuk.client.data.Response;
 
+import java.util.Collections;
 import java.util.List;
 
 import retrofit2.Callback;
@@ -27,8 +29,13 @@ public class ListPlaceRepository {
                 1, isSortByDistanceValue, prices).enqueue(new Callback<Data>() {
             @Override
             public void onResponse(retrofit2.Call<Data> call, retrofit2.Response<Data> response) {
-                data.setValue(response.body().getResponse().getGroups().get(0).getItems());
-                callbackResponse.response(data.getValue());
+                Data responseData = response.body();
+                if(responseData != null){
+                    data.setValue(responseData.getResponse().getGroups().get(0).getItems());
+                    callbackResponse.response(data.getValue());
+                } else {
+                    callbackResponse.response(Collections.emptyList());
+                }
             }
 
             @Override
