@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import com.mashazavolnyuk.client.R;
 import com.mashazavolnyuk.client.customview.RatingView;
 import com.mashazavolnyuk.client.data.Item;
@@ -17,6 +18,7 @@ import com.mashazavolnyuk.client.data.Item__;
 import com.mashazavolnyuk.client.data.Price;
 import com.mashazavolnyuk.client.data.Venue;
 import com.squareup.picasso.Picasso;
+
 import java.util.List;
 import java.util.Locale;
 
@@ -24,7 +26,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class ListPlacesAdapter extends RecyclerView.Adapter<ListPlacesAdapter.HolderAdapter>  {
+public class ListPlacesAdapter extends RecyclerView.Adapter<ListPlacesAdapter.HolderAdapter> {
 
     private Context context;
     private List<Item> data;
@@ -49,7 +51,7 @@ public class ListPlacesAdapter extends RecyclerView.Adapter<ListPlacesAdapter.Ho
         final Item item = data.get(position);
         Venue venue = item.getVenue();
         Price price = venue.getPrice();
-        String valuePrice = price != null ? price.getCurrency() : "";
+        String valuePrice = price != null ? getFormatMessageByPrice(price) : "";
         Item__ itemPhoto = venue.getPhotos().getGroups().get(0).getItems().get(0);
         if (itemPhoto != null) {
             String path = itemPhoto.getPrefix() + "500x500" + itemPhoto.getSuffix();
@@ -71,15 +73,36 @@ public class ListPlacesAdapter extends RecyclerView.Adapter<ListPlacesAdapter.Ho
         holder.root.setOnClickListener(view -> iListPlacesOnClickListener.setItem(item));
     }
 
+    private String getFormatMessageByPrice(Price price) {
+        Integer tire = price.getTier();
+        String formatPrice = null;
+        switch (tire) {
+            case 1:
+                formatPrice = "$";
+                break;
+            case 2:
+                formatPrice = "$$";
+                break;
+            case 3:
+                formatPrice = "$$$";
+                break;
+            case 4:
+                formatPrice = "$$$$";
+                break;
+        }
+        return formatPrice;
+    }
+
     private String getStringDistanceByValue(Integer value) {
         Double distance = value / 1000.0;
         return String.format(Locale.ENGLISH, "%.2f km", distance);
     }
 
-    public void setNewData(List<Item> newData){
+    public void setNewData(List<Item> newData) {
         data = newData;
         notifyDataSetChanged();
     }
+
     @Override
     public int getItemCount() {
         if (data != null) {
