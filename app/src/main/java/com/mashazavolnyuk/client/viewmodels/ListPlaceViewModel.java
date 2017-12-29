@@ -24,16 +24,14 @@ public class ListPlaceViewModel extends ViewModel {
         }
     }
 
-    public void loadGroups(double latitude, double longitude, final CallbackResponse<List<Item>>
-            callbackResponse) {
+    public void loadGroups(double latitude, double longitude, boolean isSortByDistance,
+                           String prices, final CallbackResponse<List<Item>>
+                                   callbackResponse) {
         Log.d(TAG, "loadGroups()");
         ListPlaceRepository listPlaceRepository = new ListPlaceRepository();
-        listPlaceRepository.getListPlaces(latitude, longitude, new CallbackResponse<List<Item>>() {
-            @Override
-            public void response(List<Item> response) {
-                group.setValue((response));
-                callbackResponse.response(response);
-            }
+        listPlaceRepository.getListPlaces(latitude, longitude, isSortByDistance, prices, response -> {
+            group.setValue((response));
+            callbackResponse.response(response);
         });
     }
 

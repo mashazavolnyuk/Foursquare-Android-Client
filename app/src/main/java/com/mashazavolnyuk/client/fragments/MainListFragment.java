@@ -175,11 +175,37 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
     }
 
     private void loadPlacesByLocation(double latitude, double longitude) {
-        listPlaceViewMode.loadGroups(latitude, longitude, data -> {
+        String listPricesFilter = getFillPricesFilter();
+        boolean isSortByRelevance = preferences.getBoolean(FilterParams.SORT_BY_RELEVANCE, true);
+        listPlaceViewMode.loadGroups(latitude, longitude, !isSortByRelevance, listPricesFilter, data -> {
             listPlaces = data;
             fillData(listPlaces);
             swipeRefreshLayout.setRefreshing(false);
         });
+    }
+
+    private String getFillPricesFilter() {
+        StringBuilder stringBuilder = new StringBuilder();
+        boolean level1 = preferences.getBoolean(FilterParams.FILTER_BY_EXPENSIVE_LEVEL1, false);
+        boolean level2 = preferences.getBoolean(FilterParams.FILTER_BY_EXPENSIVE_LEVEL2, false);
+        boolean level3 = preferences.getBoolean(FilterParams.FILTER_BY_EXPENSIVE_LEVEL3, false);
+        boolean level4 = preferences.getBoolean(FilterParams.FILTER_BY_EXPENSIVE_LEVEL4, false);
+        if (level1) {
+            stringBuilder.append("1");
+            stringBuilder.append(",");
+        }
+        if (level2) {
+            stringBuilder.append("2");
+            stringBuilder.append(",");
+        }
+        if (level3) {
+            stringBuilder.append("3");
+            stringBuilder.append(",");
+        }
+        if (level4) {
+            stringBuilder.append("4");
+        }
+        return stringBuilder.toString();
     }
 
     private void saveLocation(Location location) {
@@ -223,6 +249,7 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
                     listPlacesAdapter.setNewData(listPlaces);
                     return true;
                 }
+
                 @Override
                 public boolean onMenuItemActionExpand(MenuItem item) {
 
