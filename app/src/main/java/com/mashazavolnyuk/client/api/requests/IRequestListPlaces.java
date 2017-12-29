@@ -17,7 +17,7 @@ public interface IRequestListPlaces {
                              @Query("client_secret") String clientSecret,
                              @Query("ll") String s);
 
-    @GET("venues/explore?v=20182412&limit=150")
+    @GET("venues/explore?v=20182912&radius=3000&limit=250")
     Call<Data> getListRecommendationPlaces(@Query("client_id") String clientID,
                                            @Query("client_secret") String clientSecret,
                                            @Query("ll") String s,

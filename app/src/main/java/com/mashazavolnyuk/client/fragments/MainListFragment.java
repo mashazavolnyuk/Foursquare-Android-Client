@@ -146,7 +146,7 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
     @SuppressLint("MissingPermission")
     private void startFindLocation() {
         if (baseLocation != null) {
-            loadPlacesByLocation(baseLocation.getLatitude(), baseLocation.getLatitude());
+            loadPlacesByLocation(baseLocation.getLatitude(), baseLocation.getLongitude());
         } else {
             locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
             if (locationManager != null) {
