@@ -94,21 +94,15 @@ public class FilterFragment extends BaseFragment {
 
     private void setListeners() {
         sortByDistance.setOnClickListener(view -> {
-            if (!isSortByRelevance) {
-                highlightActiveElement(sortByDistance);
-                isSortByRelevance = false;
-            } else {
-                setDefaultStyleElement(sortByDistance);
-                isSortByRelevance = true;
-            }
+            isSortByRelevance = false;
+            highlightActiveElement(sortByDistance);
+            setDefaultStyleElement(sortByRelevance);
             applyChangeForLevel(5, sortByRelevance); //one boolean for two element
         });
         sortByRelevance.setOnClickListener(view -> {
-            if (!isSortByRelevance) {
-                isSortByRelevance = false;
-            } else {
-                isSortByRelevance = true;
-            }
+            highlightActiveElement(sortByRelevance);
+            setDefaultStyleElement(sortByDistance);
+            isSortByRelevance = true;
             applyChangeForLevel(5, sortByRelevance);
         });
         filterByExpensiveLevel1.setOnClickListener(view -> {

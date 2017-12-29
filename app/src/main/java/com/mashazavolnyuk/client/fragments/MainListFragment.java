@@ -42,6 +42,7 @@ import com.mashazavolnyuk.client.utils.GeocoderUtil;
 import com.mashazavolnyuk.client.viewmodels.DetailAboutPlaceViewModel;
 import com.mashazavolnyuk.client.viewmodels.ListPlaceViewModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -65,7 +66,6 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
     private List<Item> listPlaces;
     private BaseLocation baseLocation;
     private Unbinder unbinder;
-
 
 
     @Nullable
@@ -93,13 +93,8 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
         return view;
     }
 
-    private void setListeners(){
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                tryStartFindLocation();
-            }
-        });
+    private void setListeners() {
+        swipeRefreshLayout.setOnRefreshListener(this::tryStartFindLocation);
     }
 
     private BaseLocation getBaseLocation() {
@@ -219,14 +214,29 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
         inflater.inflate(R.menu.main_menu, menu);
         final MenuItem item = menu.findItem(R.id.action_search);
         final SearchView searchView = (SearchView) item.getActionView();
-        searchView.setOnQueryTextListener(this);
-        searchView.setOnSearchClickListener(view -> {
+        MenuItem menuItem = menu.findItem(R.id.action_search);
+        int currentApiVersion = android.os.Build.VERSION.SDK_INT;
+        if (currentApiVersion >= android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            menuItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+                @Override
+                public boolean onMenuItemActionCollapse(MenuItem item) {
+                    listPlacesAdapter.setNewData(listPlaces);
+                    return true;
+                }
+                @Override
+                public boolean onMenuItemActionExpand(MenuItem item) {
 
-        });
-        searchView.setOnCloseListener(() -> {
-            //Search View is collapsed
-            return false;
-        });
+                    return true;
+                }
+            });
+        } else {
+            searchView.setOnSearchClickListener(view -> {
+            });
+            searchView.setOnCloseListener(() -> {
+                listPlacesAdapter.setNewData(listPlaces);
+                return false;
+            });
+        }
         searchView.setOnQueryTextListener(this);
     }
 
@@ -269,12 +279,13 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
 
     @Override
     public boolean onQueryTextSubmit(String query) {
+        listPlacesAdapter.setNewData(listPlaces);
         return false;
     }
 
     @Override
     public boolean onQueryTextChange(String newText) {
-        listPlacesAdapter.getFilter().filter(newText);
+        filterPlace(newText);
         return false;
     }
 
@@ -282,5 +293,21 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
     public void setItem(Item item) {
         detailAboutPlaceViewMode.select(item);
         ((MainActivity) getActivity()).goToAboutSelectedPlace();
+    }
+
+    private void filterPlace(CharSequence constraint) {
+        if (constraint != null && constraint.length() > 0) {
+            List<Item> filterList = new ArrayList<>();
+            List<Item> items = listPlaces;
+            for (int i = 0; i < items.size(); i++) {
+                if ((items.get(i).getVenue().getName().toUpperCase()).contains(constraint.toString().toUpperCase()) ||
+                        (items.get(i).getVenue().getCategories().get(0).getShortName().toUpperCase()).contains(constraint.toString().toUpperCase())
+                        ) {
+                    filterList.add(listPlaces.get(i));
+                }
+            }
+            listPlacesAdapter.setNewData(filterList);
+        }
+
     }
 }

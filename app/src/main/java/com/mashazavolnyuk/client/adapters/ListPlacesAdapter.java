@@ -7,12 +7,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Filter;
-import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import com.mashazavolnyuk.client.R;
 import com.mashazavolnyuk.client.customview.RatingView;
 import com.mashazavolnyuk.client.data.Item;
@@ -20,10 +17,6 @@ import com.mashazavolnyuk.client.data.Item__;
 import com.mashazavolnyuk.client.data.Price;
 import com.mashazavolnyuk.client.data.Venue;
 import com.squareup.picasso.Picasso;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -31,18 +24,15 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class ListPlacesAdapter extends RecyclerView.Adapter<ListPlacesAdapter.HolderAdapter> implements Filterable {
+public class ListPlacesAdapter extends RecyclerView.Adapter<ListPlacesAdapter.HolderAdapter>  {
 
     private Context context;
     private List<Item> data;
-    private List<Item> filterList;
-    private ListPlaceFilter valueFilter;
     private IListPlacesOnClickListener iListPlacesOnClickListener;
 
     public ListPlacesAdapter(Context context, List<Item> data, IListPlacesOnClickListener iListPlacesOnClickListener) {
         this.context = context;
         this.data = data;
-        this.filterList = data;
         this.iListPlacesOnClickListener = iListPlacesOnClickListener;
     }
 
@@ -86,6 +76,10 @@ public class ListPlacesAdapter extends RecyclerView.Adapter<ListPlacesAdapter.Ho
         return String.format(Locale.ENGLISH, "%.2f km", distance);
     }
 
+    public void setNewData(List<Item> newData){
+        data = newData;
+        notifyDataSetChanged();
+    }
     @Override
     public int getItemCount() {
         if (data != null) {
@@ -93,15 +87,6 @@ public class ListPlacesAdapter extends RecyclerView.Adapter<ListPlacesAdapter.Ho
         } else {
             return 0;
         }
-    }
-
-
-    @Override
-    public Filter getFilter() {
-        if (valueFilter == null) {
-            valueFilter = new ListPlaceFilter();
-        }
-        return valueFilter;
     }
 
     class HolderAdapter extends RecyclerView.ViewHolder {
@@ -124,36 +109,4 @@ public class ListPlacesAdapter extends RecyclerView.Adapter<ListPlacesAdapter.Ho
         }
     }
 
-    private class ListPlaceFilter extends Filter {
-
-        @Override
-        protected FilterResults performFiltering(CharSequence constraint) {
-            FilterResults results = new FilterResults();
-
-            if (constraint != null && constraint.length() > 0) {
-                List<Item> filterList = new ArrayList<>();
-                List<Item> items = ListPlacesAdapter.this.filterList;
-                for (int i = 0; i < items.size(); i++) {
-                    if ((items.get(i).getVenue().getName().toUpperCase()).contains(constraint.toString().toUpperCase()) ||
-                            (items.get(i).getVenue().getCategories().get(0).getPluralName().toUpperCase()).contains(constraint.toString().toUpperCase()) ||
-                            (items.get(i).getVenue().getLocation().getAddress().toUpperCase()).contains(constraint.toString().toUpperCase())
-                            ) {
-                        filterList.add(ListPlacesAdapter.this.filterList.get(i));
-                    }
-                }
-                results.count = filterList.size();
-                results.values = filterList;
-            } else {
-                results.count = filterList.size();
-                results.values = filterList;
-            }
-            return results;
-        }
-
-        @Override
-        protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-            data = (List<Item>) filterResults.values;
-            notifyDataSetChanged();
-        }
-    }
 }
