@@ -25,11 +25,11 @@ public class ListPlaceViewModel extends ViewModel {
     }
 
     public void loadGroups(double latitude, double longitude, boolean isSortByDistance,
-                           String prices, final CallbackResponse<List<Item>>
+                           String prices, float radius, final CallbackResponse<List<Item>>
                                    callbackResponse) {
         Log.d(TAG, "loadGroups()");
         ListPlaceRepository listPlaceRepository = new ListPlaceRepository();
-        listPlaceRepository.getListPlaces(latitude, longitude, isSortByDistance, prices, response -> {
+        listPlaceRepository.getListPlaces(latitude, longitude, isSortByDistance, prices, radius, response -> {
             group.setValue((response));
             callbackResponse.response(response);
         });

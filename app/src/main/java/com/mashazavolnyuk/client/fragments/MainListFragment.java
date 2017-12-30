@@ -54,8 +54,10 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
         IListPlacesOnClickListener, LocationListener {
 
     private static final int LOCATION_REQUEST_CODE = 1;
-    @BindView(R.id.listPlaces)RecyclerView recyclerViewPlaces;
-    @BindView(R.id.swipeRefreshLayout) SwipeRefreshLayout swipeRefreshLayout;
+    @BindView(R.id.listPlaces)
+    RecyclerView recyclerViewPlaces;
+    @BindView(R.id.swipeRefreshLayout)
+    SwipeRefreshLayout swipeRefreshLayout;
     private DetailAboutPlaceViewModel detailAboutPlaceViewMode;
     private ListPlaceViewModel listPlaceViewMode;
     private LocationManager locationManager;
@@ -152,14 +154,14 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
     @SuppressLint("MissingPermission")
     private void startFindLocation() {
         if (baseLocation != null) {
-            loadPlacesByLocation(baseLocation.getLatitude(), baseLocation.getLongitude());
+            loadPlacesByLocation(baseLocation.getLatitude(), baseLocation.getLongitude(), baseLocation.getRadius());
         } else {
             locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
             if (locationManager != null) {
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                        100 * 10, 10, this);
+                        50 * 10, 10, this);
                 locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
-                        100 * 10, 10, this);
+                        40 * 10, 10, this);
             }
         }
     }
@@ -167,14 +169,14 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
     @Override
     public void onLocationChanged(Location location) {
         saveLocation(location);
-        loadPlacesByLocation(location.getLatitude(), location.getLongitude());
+        loadPlacesByLocation(location.getLatitude(), location.getLongitude(), 1000);
         locationManager.removeUpdates(this);
     }
 
-    private void loadPlacesByLocation(double latitude, double longitude) {
+    private void loadPlacesByLocation(double latitude, double longitude, float radius) {
         String listPricesFilter = getFillPricesFilter();
         boolean isSortByRelevance = preferences.getBoolean(FilterParams.SORT_BY_RELEVANCE, true);
-        listPlaceViewMode.loadGroups(latitude, longitude, !isSortByRelevance, listPricesFilter, data -> {
+        listPlaceViewMode.loadGroups(latitude, longitude, !isSortByRelevance, listPricesFilter, radius, data -> {
             listPlaces = data;
             fillData(listPlaces);
             swipeRefreshLayout.setRefreshing(false);

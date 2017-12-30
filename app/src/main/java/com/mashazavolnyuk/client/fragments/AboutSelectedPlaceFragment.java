@@ -20,6 +20,8 @@ import com.mashazavolnyuk.client.adapters.TipsAdapter;
 import com.mashazavolnyuk.client.data.Item;
 import com.mashazavolnyuk.client.data.Tip;
 import com.mashazavolnyuk.client.data.Venue;
+import com.mashazavolnyuk.client.data.tips.DetailTip;
+import com.mashazavolnyuk.client.repositories.CallbackResponse;
 import com.mashazavolnyuk.client.viewmodels.DetailAboutPlaceViewModel;
 
 import java.util.List;
@@ -95,10 +97,16 @@ public class AboutSelectedPlaceFragment extends BaseFragment {
     }
 
     private void fillListTips() {
-        List<Tip> tips = item.getTips();
-        TipsAdapter tipsAdapter = new TipsAdapter(getActivity(), tips);
-        recyclerViewTips.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerViewTips.setAdapter(tipsAdapter);
+        Venue venue = item.getVenue();
+        model.getTipsByIdVenue(venue.getId(), new CallbackResponse<List<DetailTip>>() {
+            @Override
+            public void response(List<DetailTip> response) {
+                List<DetailTip> tips = response;
+                TipsAdapter tipsAdapter = new TipsAdapter(getActivity(), tips);
+                recyclerViewTips.setLayoutManager(new LinearLayoutManager(getActivity()));
+                recyclerViewTips.setAdapter(tipsAdapter);
+            }
+        });
     }
 
     private void fillAboutPlace() {

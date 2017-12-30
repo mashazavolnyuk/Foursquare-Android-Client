@@ -10,6 +10,5 @@ public class FilterParams {
 
     public static final String USER_LOCATION = "userLocation";
     public static final String SELECTED_LOCATION = "selectedLocation";
-    public static final String RADIUS = "radius";
 
 }

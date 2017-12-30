@@ -13,6 +13,7 @@ import com.mashazavolnyuk.client.R;
 
 import com.mashazavolnyuk.client.data.Photo__;
 import com.mashazavolnyuk.client.data.Tip;
+import com.mashazavolnyuk.client.data.tips.DetailTip;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -22,9 +23,9 @@ import butterknife.ButterKnife;
 
 public class TipsAdapter extends RecyclerView.Adapter<TipsAdapter.HolderAdapter> {
     private Context context;
-    private List<Tip> tipList;
+    private List<DetailTip> tipList;
 
-    public TipsAdapter(Context context, List<Tip> tipList) {
+    public TipsAdapter(Context context, List<DetailTip> tipList) {
         this.context = context;
         this.tipList = tipList;
     }
@@ -38,20 +39,20 @@ public class TipsAdapter extends RecyclerView.Adapter<TipsAdapter.HolderAdapter>
 
     @Override
     public void onBindViewHolder(HolderAdapter holder, int position) {
-        Tip tip = tipList.get(position);
+        DetailTip tip = tipList.get(position);
         holder.messageUser.setText(tip.getText());
         String userName = tip.getUser().getFirstName() + " " + tip.getUser().getLastName();
         holder.nameUser.setText(userName);
         decideIsShowLikes(holder, tip);
-        Photo__ photoUser = tip.getUser().getPhoto();
-        if (photoUser != null) {
-            String path = photoUser.getPrefix() + "500x500" + photoUser.getSuffix();
-            Uri uri = Uri.parse(path);
+        String photoUrl = tip.getPhotourl();
+        if (photoUrl != null) {
+//            String path = photoUser.getPrefix() + "500x500" + photoUser.getSuffix();
+            Uri uri = Uri.parse(photoUrl);
             Picasso.with(context).load(uri).error(R.drawable.ic_error_image).into(holder.photoUser);
         }
     }
 
-    private void decideIsShowLikes(HolderAdapter holder, Tip tip) {
+    private void decideIsShowLikes(HolderAdapter holder, DetailTip tip) {
         if (tip.getLikes() == null) {
             holder.imageLikes.setVisibility(View.INVISIBLE);
         } else {
@@ -71,12 +72,18 @@ public class TipsAdapter extends RecyclerView.Adapter<TipsAdapter.HolderAdapter>
     }
 
     class HolderAdapter extends RecyclerView.ViewHolder {
-        @BindView(R.id.photoUser) ImageView photoUser;
-        @BindView(R.id.messageUser) TextView messageUser;
-        @BindView(R.id.nameUser) TextView nameUser;
-        @BindView(R.id.dataMessage) TextView dataMessage;
-        @BindView(R.id.countLike) TextView countLike;
-        @BindView(R.id.imageLikes)ImageView imageLikes;
+        @BindView(R.id.photoUser)
+        ImageView photoUser;
+        @BindView(R.id.messageUser)
+        TextView messageUser;
+        @BindView(R.id.nameUser)
+        TextView nameUser;
+        @BindView(R.id.dataMessage)
+        TextView dataMessage;
+        @BindView(R.id.countLike)
+        TextView countLike;
+        @BindView(R.id.imageLikes)
+        ImageView imageLikes;
 
         HolderAdapter(View view) {
             super(view);

@@ -18,7 +18,7 @@ public class ListPlaceRepository {
     private MutableLiveData<List<Item>> data;
 
     public void getListPlaces(double latitude, double longitude,
-                              boolean isSortByDistance, String prices,
+                              boolean isSortByDistance, String prices, float radius,
                               final CallbackResponse<List<Item>> callbackResponse) {
         data = new MutableLiveData<>();
         IRequestListPlaces iRequestListPlaces = RetrofitClient.getRetrofit().create(IRequestListPlaces.class);
@@ -26,11 +26,11 @@ public class ListPlaceRepository {
         String secret = "TJNGAOBUDM1ILMOZJZ5Y02LWJS5SM3QGO55HJMNBEXIYKK0W";
         String isSortByDistanceValue = isSortByDistance ? "1" : "0";
         iRequestListPlaces.getListRecommendationPlaces(id, secret, "" + latitude + "," + longitude,
-                1, isSortByDistanceValue, prices).enqueue(new Callback<Data>() {
+                1, isSortByDistanceValue, prices, String.valueOf(radius)).enqueue(new Callback<Data>() {
             @Override
             public void onResponse(retrofit2.Call<Data> call, retrofit2.Response<Data> response) {
                 Data responseData = response.body();
-                if(responseData != null){
+                if (responseData != null) {
                     data.setValue(responseData.getResponse().getGroups().get(0).getItems());
                     callbackResponse.response(data.getValue());
                 } else {

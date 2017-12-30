@@ -4,8 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -50,8 +48,9 @@ public class MapFragment extends BaseFragment implements OnMapReadyCallback,
     private SharedPreferences preferences;
     private Unbinder unbinder;
     private BaseLocation baseLocation;
-    double currentLatitude;
-    double currentLongitude;
+    private double currentLatitude;
+    private double currentLongitude;
+    private float radius;
 
     @Nullable
     @Override
@@ -81,6 +80,7 @@ public class MapFragment extends BaseFragment implements OnMapReadyCallback,
             @Override
             public void onProgressChanged(SeekBar seekBar, int value, boolean b) {
                 double valueForZoom = ConverterForZoom.getKmByPosition(value);
+                radius = (float) valueForZoom;
                 float zoom = (float) getZoomLevel(valueForZoom);
                 zoomMap(currentLatitude, currentLongitude, zoom);
             }
@@ -188,6 +188,7 @@ public class MapFragment extends BaseFragment implements OnMapReadyCallback,
         selectedLocation.setAddress(address);
         selectedLocation.setLatitude(latitude);
         selectedLocation.setLongitude(longitude);
+        selectedLocation.setRadius(radius*1000);
         Gson gson = new Gson();
         String jsonModel = gson.toJson(selectedLocation);
         SharedPreferences.Editor editor = preferences.edit();

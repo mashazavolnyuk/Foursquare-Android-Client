@@ -9,10 +9,12 @@ import com.google.gson.JsonObject;
 import com.mashazavolnyuk.client.api.RetrofitClient;
 import com.mashazavolnyuk.client.api.requests.IRequestListPlaces;
 import com.mashazavolnyuk.client.api.requests.IRequestStaticMap;
-import com.mashazavolnyuk.client.data.Photo;
 import com.mashazavolnyuk.client.data.Venue;
 import com.mashazavolnyuk.client.data.photos.DetailedPhoto;
 import com.mashazavolnyuk.client.data.photos.PhotoItem;
+import com.mashazavolnyuk.client.data.tips.DetailTip;
+import com.mashazavolnyuk.client.data.tips.TipElement;
+import com.mashazavolnyuk.client.data.tips.Tips;
 
 import java.io.IOException;
 import java.util.List;
@@ -38,7 +40,7 @@ public class DetailAboutPlaceRepository {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 Gson gson = new Gson();
-                JsonObject jsonObject = gson.fromJson(response.body().toString(), JsonObject.class);
+                JsonObject jsonObject = gson.fromJson(response.body(), JsonObject.class);
                 DetailedPhoto detailedPhoto = gson.fromJson(((JsonObject) jsonObject.get("response")).get("photos"), DetailedPhoto.class);
                 data.setValue(detailedPhoto.getItems());
                 iObserverListPlacesData.response(data.getValue());
@@ -48,6 +50,31 @@ public class DetailAboutPlaceRepository {
             public void onFailure(Call<String> call, Throwable t) {
             }
         });
+    }
+
+    public void getDetailedTipsById(String idVenue,
+                                    final CallbackResponse<List<DetailTip>> iObserverListDetaileTips) {
+        RetrofitClient.changeApiBaseUrl("https://api.foursquare.com/v2/");
+        IRequestListPlaces iRequestListPlaces = RetrofitClient.getRetrofit().create(IRequestListPlaces.class);
+        String id = "XCVWHEE4CR51K5UHTEOW1KUU4QT3RKBRZLQMG1ZN0APZPWVR";
+        String secret = "TJNGAOBUDM1ILMOZJZ5Y02LWJS5SM3QGO55HJMNBEXIYKK0W";
+        iRequestListPlaces.getDetailedTipsById(idVenue, id, secret).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                Gson gson = new Gson();
+                JsonObject jsonObject = gson.fromJson(response.body(), JsonObject.class);
+                Tips detailedTips = gson.fromJson(((JsonObject) jsonObject.get("response")).get("tips"), Tips.class);
+                List<DetailTip> tipElements = detailedTips.getItems();
+                iObserverListDetaileTips.response(tipElements);
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+
+            }
+        });
+
+
     }
 
     public void loadStaticGoogleMap(Venue venue, CallbackResponse<Bitmap> bitmapCallbackResponse) {
