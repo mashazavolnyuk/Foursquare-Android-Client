@@ -24,6 +24,7 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
+import com.mashazavolnyuk.client.ProjectConstants;
 import com.mashazavolnyuk.client.R;
 import com.mashazavolnyuk.client.data.locationUser.BaseLocation;
 import com.mashazavolnyuk.client.data.locationUser.SelectedLocation;
@@ -131,11 +132,12 @@ public class MapFragment extends BaseFragment implements OnMapReadyCallback,
         baseLocation = getBaseLocation();
         assert baseLocation != null;
         LatLng coordinate = new LatLng(baseLocation.getLatitude(), baseLocation.getLongitude());
-        float zoom = (float) getZoomLevel(0.5);
+        radius = baseLocation.getRadius();
+        zoomLevelMap.setProgress(ConverterForZoom.getPositionByRadius((double) radius));
+        float zoom = (float) getZoomLevel(radius);
         CameraUpdate location = CameraUpdateFactory.newLatLngZoom(
                 coordinate, zoom);
         map.animateCamera(location);
-
     }
 
     private void zoomMap(double latitude, double longitude, float zoom) {
@@ -154,12 +156,13 @@ public class MapFragment extends BaseFragment implements OnMapReadyCallback,
         String selectedLocationModel = preferences.getString(FilterParams.SELECTED_LOCATION, "");
         if (!selectedLocationModel.isEmpty()) {
             baseLocation = gson.fromJson(selectedLocationModel, SelectedLocation.class);
-            return baseLocation;
-        } else {
-            if (!userLocationModel.isEmpty()) {
+            if (baseLocation == null) {
                 baseLocation = gson.fromJson(userLocationModel, UserLocation.class);
                 return baseLocation;
             }
+        } else {
+            baseLocation = gson.fromJson(userLocationModel, UserLocation.class);
+            return baseLocation;
         }
         return null;
     }
@@ -188,7 +191,7 @@ public class MapFragment extends BaseFragment implements OnMapReadyCallback,
         selectedLocation.setAddress(address);
         selectedLocation.setLatitude(latitude);
         selectedLocation.setLongitude(longitude);
-        selectedLocation.setRadius(radius*1000);
+        selectedLocation.setRadius(radius * ProjectConstants.DEFAULT_RADIUS);
         Gson gson = new Gson();
         String jsonModel = gson.toJson(selectedLocation);
         SharedPreferences.Editor editor = preferences.edit();

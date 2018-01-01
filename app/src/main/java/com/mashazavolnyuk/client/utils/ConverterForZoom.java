@@ -24,4 +24,13 @@ public class ConverterForZoom {
     public static double getKmByPosition(int position) {
         return mapPosition.get(position);
     }
+
+    public static int getPositionByRadius(Double value) {
+        for (Integer key : mapPosition.keySet()) {
+            if (mapPosition.get(key).equals(value)) {
+                return key;
+            }
+        }
+        return 4;
+    }
 }

@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -42,6 +43,9 @@ public class FilterFragment extends BaseFragment {
     Button filterByExpensiveLevel3;
     @BindView((R.id.filterByExpensiveLevel4))
     Button filterByExpensiveLevel4;
+    @BindView(R.id.returnToStartLocation)
+    ImageView returnToStartLocation;
+
 
     boolean isAvailableLevel1;
     boolean isAvailableLevel2;
@@ -70,6 +74,7 @@ public class FilterFragment extends BaseFragment {
         updateUIAccordingToFilterSettings();
         setListeners();
         selectPlaceAndRadius.setOnClickListener(view1 -> ((MainActivity) getActivity()).goToMap());
+        returnToStartLocation.setOnClickListener(view12 -> resetLocation());
         return view;
     }
 
@@ -212,6 +217,17 @@ public class FilterFragment extends BaseFragment {
         updateUIAccordingToFilterSettings();
     }
 
+    private void resetLocation() {
+        selectedLocation = null;
+        Gson gson = new Gson();
+        String jsonModel = gson.toJson(selectedLocation);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(FilterParams.SELECTED_LOCATION, jsonModel);
+        editor.apply();
+        returnToStartLocation.setVisibility(View.INVISIBLE);
+        hereNow.setText(userLocation.getAddress());
+    }
+
     private void updateUIAccordingToFilterSettings() {
         if (isSortByRelevance) {
             highlightActiveElement(sortByRelevance);
@@ -225,8 +241,10 @@ public class FilterFragment extends BaseFragment {
         applyChangeForLevel(3, filterByExpensiveLevel3);
         applyChangeForLevel(4, filterByExpensiveLevel4);
         if (selectedLocation != null) {
+            returnToStartLocation.setVisibility(View.VISIBLE);
             hereNow.setText(selectedLocation.getAddress());
         } else {
+            returnToStartLocation.setVisibility(View.INVISIBLE);
             hereNow.setText(userLocation.getAddress());
         }
     }
