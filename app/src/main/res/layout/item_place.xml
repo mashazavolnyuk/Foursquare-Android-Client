@@ -5,6 +5,8 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:paddingEnd="@dimen/padding_right_default"
+    android:paddingLeft="@dimen/padding_left_default"
+    android:paddingRight="@dimen/padding_right_default"
     android:paddingStart="@dimen/padding_left_default">
 
     <ImageView

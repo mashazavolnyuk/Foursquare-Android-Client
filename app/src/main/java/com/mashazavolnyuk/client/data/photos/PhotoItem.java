@@ -2,8 +2,9 @@ package com.mashazavolnyuk.client.data.photos;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.mashazavolnyuk.client.adapters.IDataDetailVenue;
 
-public class PhotoItem {
+public class PhotoItem implements IDataDetailVenue {
 
     @SerializedName("id")
     @Expose

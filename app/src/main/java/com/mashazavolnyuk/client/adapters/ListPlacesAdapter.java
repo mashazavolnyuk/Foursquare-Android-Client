@@ -17,6 +17,7 @@ import com.mashazavolnyuk.client.data.Item;
 import com.mashazavolnyuk.client.data.Item__;
 import com.mashazavolnyuk.client.data.Price;
 import com.mashazavolnyuk.client.data.Venue;
+import com.mashazavolnyuk.client.utils.ConverterForPrice;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -51,7 +52,7 @@ public class ListPlacesAdapter extends RecyclerView.Adapter<ListPlacesAdapter.Ho
         final Item item = data.get(position);
         Venue venue = item.getVenue();
         Price price = venue.getPrice();
-        String valuePrice = price != null ? getFormatMessageByPrice(price) : "";
+        String valuePrice = price != null ? ConverterForPrice.getFormatMessageByPrice(price) : "";
         Item__ itemPhoto = venue.getPhotos().getGroups().get(0).getItems().get(0);
         if (itemPhoto != null) {
             String path = itemPhoto.getPrefix() + "500x500" + itemPhoto.getSuffix();
@@ -71,26 +72,6 @@ public class ListPlacesAdapter extends RecyclerView.Adapter<ListPlacesAdapter.Ho
             holder.rating.setBackgroundShapeColor(color);
         }
         holder.root.setOnClickListener(view -> iListPlacesOnClickListener.setItem(item));
-    }
-
-    private String getFormatMessageByPrice(Price price) {
-        Integer tire = price.getTier();
-        String formatPrice = null;
-        switch (tire) {
-            case 1:
-                formatPrice = "$";
-                break;
-            case 2:
-                formatPrice = "$$";
-                break;
-            case 3:
-                formatPrice = "$$$";
-                break;
-            case 4:
-                formatPrice = "$$$$";
-                break;
-        }
-        return formatPrice;
     }
 
     private String getStringDistanceByValue(Integer value) {
