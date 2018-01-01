@@ -156,7 +156,9 @@ public class MapFragment extends BaseFragment implements OnMapReadyCallback,
         String selectedLocationModel = preferences.getString(FilterParams.SELECTED_LOCATION, "");
         if (!selectedLocationModel.isEmpty()) {
             baseLocation = gson.fromJson(selectedLocationModel, SelectedLocation.class);
-            if (baseLocation == null) {
+            if (baseLocation != null) {
+                return baseLocation;
+            } else {
                 baseLocation = gson.fromJson(userLocationModel, UserLocation.class);
                 return baseLocation;
             }
@@ -164,7 +166,6 @@ public class MapFragment extends BaseFragment implements OnMapReadyCallback,
             baseLocation = gson.fromJson(userLocationModel, UserLocation.class);
             return baseLocation;
         }
-        return null;
     }
 
     @SuppressLint("MissingPermission")
