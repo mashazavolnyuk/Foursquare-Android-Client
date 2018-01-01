@@ -2,7 +2,7 @@ package com.mashazavolnyuk.client.data.photos;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.mashazavolnyuk.client.adapters.IDataDetailVenue;
+import com.mashazavolnyuk.client.data.IDataDetailVenue;
 
 public class PhotoItem implements IDataDetailVenue {
 

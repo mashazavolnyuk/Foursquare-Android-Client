@@ -2,7 +2,7 @@ package com.mashazavolnyuk.client.data.tips;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.mashazavolnyuk.client.adapters.IDataDetailVenue;
+import com.mashazavolnyuk.client.data.IDataDetailVenue;
 import com.mashazavolnyuk.client.data.Likes;
 import com.mashazavolnyuk.client.data.Photo;
 import com.mashazavolnyuk.client.data.User;

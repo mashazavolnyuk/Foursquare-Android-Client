@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.mashazavolnyuk.client.R;
 import com.mashazavolnyuk.client.customview.RatingView;
+import com.mashazavolnyuk.client.data.IDataDetailVenue;
 import com.mashazavolnyuk.client.data.Price;
 import com.mashazavolnyuk.client.data.detailedVenue.DataInfoVenue;
 import com.mashazavolnyuk.client.data.detailedVenue.HeaderTip;
@@ -92,11 +93,7 @@ public class DetailVenueAdapter extends RecyclerView.Adapter<DetailVenueAdapter.
                 DataInfoVenue dataInfoVenue = (DataInfoVenue) data.get(position);
                 InfoHolder infoHolder = (InfoHolder) holder;
                 List<PhotoItem> photoItem = dataInfoVenue.getGallery();
-                if (photoItem.size() != 0) {
-                    String firstUri = photoItem.get(0).getPrefix() + "640x400" + photoItem.get(0).getSuffix();
-                    uri = Uri.parse(firstUri);
-                    Picasso.with(context).load(uri).error(R.drawable.ic_error_image).into(((InfoHolder) holder).firstPopularPhoto);
-                }
+                fillGallery(infoHolder, photoItem);
                 infoHolder.firstPositionText.setText(dataInfoVenue.getListInfo().get(0));
                 infoHolder.secondPositionText.setText(dataInfoVenue.getListInfo().get(1));
                 infoHolder.thirdPositionText.setText(dataInfoVenue.getListInfo().get(2));
@@ -132,6 +129,29 @@ public class DetailVenueAdapter extends RecyclerView.Adapter<DetailVenueAdapter.
         }
     }
 
+    private void fillGallery(InfoHolder infoHolder, List<PhotoItem> photoItem) {
+        Uri uri;
+        ImageView imageView = null;
+        if (photoItem.size() != 0) {
+            for (int index = 0; index < 3; index++) {
+                switch (index) {
+                    case 0:
+                        imageView = infoHolder.firstPopularPhoto;
+                        break;
+                    case 1:
+                        imageView = infoHolder.secondPopularPhoto;
+                        break;
+                    case 2:
+                        imageView = infoHolder.thirdPopularPhoto;
+                        break;
+                }
+                String firstUri = photoItem.get(index).getPrefix() + "640x400" + photoItem.get(index).getSuffix();
+                uri = Uri.parse(firstUri);
+                Picasso.with(context).load(uri).error(R.drawable.ic_error_image).into(imageView);
+            }
+        }
+    }
+
     private void decideIsShowLikes(TipHolder holder, DetailTip tip) {
         if (tip.getLikes() == null) {
             holder.imageLikes.setVisibility(View.INVISIBLE);
@@ -139,7 +159,7 @@ public class DetailVenueAdapter extends RecyclerView.Adapter<DetailVenueAdapter.
             Integer countLikes = tip.getLikes().getCount() != null ? tip.getLikes().getCount() : 0;
             if (countLikes > 0) {
                 holder.imageLikes.setVisibility(View.VISIBLE);
-                holder.countLike.setText(countLikes.toString());
+                holder.countLike.setText(String.format("%s", countLikes));
             } else {
                 holder.imageLikes.setVisibility(View.INVISIBLE);
             }

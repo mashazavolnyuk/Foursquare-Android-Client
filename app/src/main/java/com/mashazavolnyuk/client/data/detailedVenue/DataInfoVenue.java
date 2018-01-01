@@ -2,7 +2,7 @@ package com.mashazavolnyuk.client.data.detailedVenue;
 
 import android.graphics.Bitmap;
 
-import com.mashazavolnyuk.client.adapters.IDataDetailVenue;
+import com.mashazavolnyuk.client.data.IDataDetailVenue;
 import com.mashazavolnyuk.client.data.Price;
 import com.mashazavolnyuk.client.data.photos.PhotoItem;
 
@@ -22,10 +22,6 @@ public class DataInfoVenue implements IDataDetailVenue {
     public DataInfoVenue() {
         listInfo = new ArrayList<>();
         photoItems = new ArrayList<>();
-    }
-
-    public void addInfo(PhotoItem info) {
-        photoItems.add(info);
     }
 
     public double getRating() {

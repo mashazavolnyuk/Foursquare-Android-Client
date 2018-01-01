@@ -14,7 +14,7 @@ import android.view.ViewGroup;
 
 import com.mashazavolnyuk.client.R;
 import com.mashazavolnyuk.client.adapters.DetailVenueAdapter;
-import com.mashazavolnyuk.client.adapters.IDataDetailVenue;
+import com.mashazavolnyuk.client.data.IDataDetailVenue;
 import com.mashazavolnyuk.client.data.detailedVenue.DataInfoVenue;
 import com.mashazavolnyuk.client.data.Item;
 import com.mashazavolnyuk.client.data.Venue;
