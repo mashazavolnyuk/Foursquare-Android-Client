@@ -7,7 +7,7 @@
         android:id="@+id/firstPopularPhoto"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_margin="@dimen/padding_beetwen_element_default"
+        android:layout_margin="@dimen/padding_between_element_default"
         android:layout_weight="1"
         android:contentDescription="@string/gallery"
         android:scaleType="center" />
@@ -16,7 +16,7 @@
         android:id="@+id/secondPopularPhoto"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_margin="@dimen/padding_beetwen_element_default"
+        android:layout_margin="@dimen/padding_between_element_default"
         android:layout_weight="1"
         android:contentDescription="@string/gallery"
         android:scaleType="center" />
@@ -25,7 +25,7 @@
         android:id="@+id/thirdPopularPhoto"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_margin="@dimen/padding_beetwen_element_default"
+        android:layout_margin="@dimen/padding_between_element_default"
         android:layout_weight="1"
         android:contentDescription="@string/gallery"
         android:scaleType="center" />

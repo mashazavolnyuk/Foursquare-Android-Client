@@ -5,7 +5,9 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:paddingLeft="16dp"
-    android:paddingRight="16dp">
+    android:paddingRight="16dp"
+    android:paddingEnd="@dimen/padding_between_element_default"
+    android:paddingTop="@dimen/padding_between_element_default">
 
     <TextView
         android:id="@+id/messageUser"
@@ -32,10 +34,13 @@
 
             <ImageView
                 android:id="@+id/photoUser"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
+                android:layout_width="@dimen/image_wight_list_default"
+                android:layout_height="@dimen/image_height_list_default"
+                android:layout_gravity="center_vertical"
+                android:scaleType="centerCrop"
                 android:contentDescription="@string/contentDescription"
-                android:gravity="center_vertical" />
+                android:paddingEnd="@dimen/padding_between_element_default"
+                android:paddingStart="@dimen/padding_between_element_default" />
 
             <TextView
                 android:id="@+id/nameUser"
@@ -71,13 +76,15 @@
                     android:id="@+id/countLike"
                     android:layout_width="25dp"
                     android:layout_height="25dp"
-                    android:layout_gravity="end" />
-                
+                    android:gravity="end"
+                    android:textAlignment="textEnd" />
+
                 <ImageView
                     android:id="@+id/imageLikes"
                     android:layout_width="25dp"
                     android:layout_height="25dp"
                     android:layout_gravity="end"
+
                     android:background="@drawable/ic_like"
                     android:contentDescription="@string/like"
                     android:visibility="invisible" />

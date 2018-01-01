@@ -2,5 +2,9 @@
 <resources>
     <dimen name="padding_left_default">16dp</dimen>
     <dimen name="padding_right_default">16dp</dimen>
-    <dimen name="padding_beetwen_element_default">4dp</dimen>
+    <dimen name="padding_between_element_default">4dp</dimen>
+
+    <dimen name="image_wight_list_default">60dp</dimen>
+    <dimen name="image_height_list_default">60dp</dimen>
+
 </resources>

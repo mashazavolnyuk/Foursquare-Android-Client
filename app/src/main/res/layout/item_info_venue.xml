@@ -32,33 +32,32 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/padding_beetwen_element_default"
+            android:layout_margin="@dimen/padding_between_element_default"
             android:layout_weight="1"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp">
 
             <TextView
                 android:id="@+id/firstPositionText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
-                android:maxLines="1"
-                android:text="@string/testtext" />
+                android:maxLines="1" />
 
             <TextView
                 android:id="@+id/secondPositionText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
-                android:maxLines="1"
-                android:text="@string/testtext" />
+                android:maxLines="1" />
 
             <TextView
                 android:id="@+id/thirdPositionText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
-                android:maxLines="1"
-                android:text="@string/testtext" />
+                android:maxLines="1" />
         </LinearLayout>
 
         <TextView
@@ -66,7 +65,7 @@
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_gravity="center_vertical"
-            android:layout_margin="@dimen/padding_beetwen_element_default" />
+            android:layout_margin="@dimen/padding_between_element_default" />
     </LinearLayout>
 
     <View
@@ -76,6 +75,8 @@
 
     <TextView
         android:id="@+id/locationVenue"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

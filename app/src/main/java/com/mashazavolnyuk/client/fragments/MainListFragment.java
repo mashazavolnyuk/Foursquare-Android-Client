@@ -18,9 +18,11 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -29,6 +31,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.gson.Gson;
+import com.mashazavolnyuk.client.ProjectConstants;
 import com.mashazavolnyuk.client.data.locationUser.BaseLocation;
 import com.mashazavolnyuk.client.data.locationUser.SelectedLocation;
 import com.mashazavolnyuk.client.data.locationUser.UserLocation;
@@ -48,6 +51,8 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+
+import static android.content.Context.LOCATION_SERVICE;
 
 
 public class MainListFragment extends BaseFragment implements SearchView.OnQueryTextListener,
@@ -154,22 +159,41 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
     @SuppressLint("MissingPermission")
     private void startFindLocation() {
         if (baseLocation != null) {
-            loadPlacesByLocation(baseLocation.getLatitude(), baseLocation.getLongitude(), baseLocation.getRadius());
+            if (baseLocation.getLatitude() > 0.0 && baseLocation.getLongitude() > 0.0) {
+                loadPlacesByLocation(baseLocation.getLatitude(), baseLocation.getLongitude(), baseLocation.getRadius());
+            }
         } else {
-            locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-            if (locationManager != null) {
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                        50 * 10, 10, this);
-                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
-                        40 * 10, 10, this);
+            locationManager = (LocationManager) getActivity().getApplicationContext().getSystemService(LOCATION_SERVICE);
+            Location location = getLastKnownLocation();
+            if (location != null) {
+                this.onLocationChanged(location);
+            } else {
+                hideDialog();
+                showToast("Please enable GPS and try again");
             }
         }
+    }
+
+    @SuppressLint("MissingPermission")
+    private Location getLastKnownLocation() {
+        List<String> providers = locationManager.getProviders(true);
+        Location bestLocation = null;
+        for (String provider : providers) {
+            Location l = locationManager.getLastKnownLocation(provider);
+            if (l == null) {
+                continue;
+            }
+            if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
+                bestLocation = l;
+            }
+        }
+        return bestLocation;
     }
 
     @Override
     public void onLocationChanged(Location location) {
         saveLocation(location);
-        loadPlacesByLocation(location.getLatitude(), location.getLongitude(), 1000);
+        loadPlacesByLocation(location.getLatitude(), location.getLongitude(), ProjectConstants.DEFAULT_RADIUS);
         locationManager.removeUpdates(this);
     }
 
@@ -211,6 +235,8 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
         String address = GeocoderUtil.getAddressByLocation(getActivity().getApplication(), location.getLatitude(),
                 location.getLongitude());
         UserLocation userLocation = new UserLocation();
+        userLocation.setLatitude(location.getLatitude());
+        userLocation.setLongitude(location.getLongitude());
         userLocation.setAddress(address);
         Gson gson = new Gson();
         String jsonModel = gson.toJson(userLocation);
@@ -299,6 +325,7 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
     private void fillData(List<Item> listPlaces) {
         listPlacesAdapter = new ListPlacesAdapter(getActivity(), listPlaces, this);
         recyclerViewPlaces.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerViewPlaces.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
         recyclerViewPlaces.setAdapter(listPlacesAdapter);
         hideDialog();
     }
