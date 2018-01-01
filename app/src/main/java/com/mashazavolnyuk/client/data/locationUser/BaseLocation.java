@@ -1,10 +1,11 @@
 package com.mashazavolnyuk.client.data.locationUser;
 
 public class BaseLocation {
-    protected double latitude;
-    protected double longitude;
-    protected String address;
-    protected float radius = 10000.0f; //by default 10 km
+
+    private double latitude;
+    private double longitude;
+    private String address;
+    private float radius = 10000.0f; //by default 10 km
 
     public float getRadius() {
         return radius;

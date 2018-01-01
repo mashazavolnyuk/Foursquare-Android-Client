@@ -6,7 +6,7 @@ import android.graphics.BitmapFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.mashazavolnyuk.client.ProjectCredentation;
+import com.mashazavolnyuk.client.Constants;
 import com.mashazavolnyuk.client.api.RetrofitClient;
 import com.mashazavolnyuk.client.api.requests.IRequestListPlaces;
 import com.mashazavolnyuk.client.api.requests.IRequestStaticMap;
@@ -14,7 +14,6 @@ import com.mashazavolnyuk.client.data.Venue;
 import com.mashazavolnyuk.client.data.photos.DetailedPhoto;
 import com.mashazavolnyuk.client.data.photos.PhotoItem;
 import com.mashazavolnyuk.client.data.tips.DetailTip;
-import com.mashazavolnyuk.client.data.tips.TipElement;
 import com.mashazavolnyuk.client.data.tips.Tips;
 
 import java.io.IOException;
@@ -26,7 +25,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class DetailAboutPlaceRepository {
+public class PlaceRepository {
     private MutableLiveData<List<PhotoItem>> data;
 
     public void getDetailedPhotoById(String idVenue,
@@ -34,7 +33,7 @@ public class DetailAboutPlaceRepository {
         data = new MutableLiveData<>();
         RetrofitClient.changeApiBaseUrl("https://api.foursquare.com/v2/");
         IRequestListPlaces iRequestListPlaces = RetrofitClient.getRetrofit().create(IRequestListPlaces.class);
-        iRequestListPlaces.getDetailedPhotosById(idVenue, ProjectCredentation.ID, ProjectCredentation.SECRET).enqueue(new Callback<String>() {
+        iRequestListPlaces.getDetailedPhotosById(idVenue, Constants.ID, Constants.SECRET).enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 Gson gson = new Gson();
@@ -54,7 +53,7 @@ public class DetailAboutPlaceRepository {
                                     final CallbackResponse<List<DetailTip>> iObserverListDetaileTips) {
         RetrofitClient.changeApiBaseUrl("https://api.foursquare.com/v2/");
         IRequestListPlaces iRequestListPlaces = RetrofitClient.getRetrofit().create(IRequestListPlaces.class);
-        iRequestListPlaces.getDetailedTipsById(idVenue, ProjectCredentation.ID, ProjectCredentation.SECRET).enqueue(new Callback<String>() {
+        iRequestListPlaces.getDetailedTipsById(idVenue, Constants.ID, Constants.SECRET).enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 Gson gson = new Gson();
@@ -74,11 +73,11 @@ public class DetailAboutPlaceRepository {
     public void loadStaticGoogleMap(Venue venue, CallbackResponse<Bitmap> bitmapCallbackResponse) {
         Double lat = venue.getLocation().getLat();
         Double lng = venue.getLocation().getLng();
-        String markerStyle = String.format(Locale.ENGLISH, "color:blue|%.7f,%.7f|size:mid|label:S", lat, lng);
+        String markerStyle = String.format(Locale.ENGLISH, "color:red|%.7f,%.7f|size:mid|label:S", lat, lng);
         RetrofitClient.changeApiBaseUrl("https://maps.googleapis.com/");
         IRequestStaticMap iRequestListPlaces = RetrofitClient.getRetrofit().create(IRequestStaticMap.class);
-        iRequestListPlaces.getStaticGoogleMap(lat + "," + lng, "640x400", "15",
-                markerStyle, ProjectCredentation.MAP_KEY)
+        iRequestListPlaces.getStaticGoogleMap(lat + "," + lng, "640x400", "16",
+                markerStyle, Constants.MAP_KEY)
                 .enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {

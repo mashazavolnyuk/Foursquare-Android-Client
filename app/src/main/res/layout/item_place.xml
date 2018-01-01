@@ -4,11 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:paddingEnd="@dimen/padding_right_default"
-    android:paddingLeft="@dimen/padding_left_default"
-    android:paddingRight="@dimen/padding_right_default"
-    android:paddingStart="@dimen/padding_left_default"
-    android:paddingTop="@dimen/padding_between_element_default">
+    android:padding="8dp">
 
     <ImageView
         android:id="@+id/photoPlace"
@@ -19,7 +15,7 @@
 
     <LinearLayout
         android:layout_width="0dp"
-        android:layout_height="72dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_weight="1"
         android:orientation="vertical"
@@ -33,14 +29,12 @@
             android:ellipsize="end"
             android:maxLines="1" />
 
-
         <TextView
             android:id="@+id/secondPositionText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="1" />
-
 
         <TextView
             android:id="@+id/thirdPositionText"

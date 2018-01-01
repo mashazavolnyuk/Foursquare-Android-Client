@@ -4,8 +4,7 @@ import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.util.Log;
 
-import com.mashazavolnyuk.client.data.Data;
-import com.mashazavolnyuk.client.data.Item;
+import com.mashazavolnyuk.client.data.PlaceItem;
 import com.mashazavolnyuk.client.repositories.CallbackResponse;
 import com.mashazavolnyuk.client.repositories.ListPlaceRepository;
 
@@ -14,9 +13,9 @@ import java.util.List;
 public class ListPlaceViewModel extends ViewModel {
 
     private static final String TAG = "MyViewModel";
-    private MutableLiveData<List<Item>> group = new MutableLiveData<>();
+    private MutableLiveData<List<PlaceItem>> group = new MutableLiveData<>();
 
-    public List<Item> getCache() {
+    public List<PlaceItem> getCache() {
         if (group != null) {
             return group.getValue();
         } else {
@@ -25,7 +24,7 @@ public class ListPlaceViewModel extends ViewModel {
     }
 
     public void loadGroups(double latitude, double longitude, boolean isSortByDistance,
-                           String prices, float radius, final CallbackResponse<List<Item>>
+                           String prices, float radius, final CallbackResponse<List<PlaceItem>>
                                    callbackResponse) {
         Log.d(TAG, "loadGroups()");
         ListPlaceRepository listPlaceRepository = new ListPlaceRepository();

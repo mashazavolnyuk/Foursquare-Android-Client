@@ -15,8 +15,8 @@ public class DataInfoVenue implements IDataDetailVenue {
     private List<String> listInfo;
     private String location;
     private Price price;
-    private double rating;
-    private int color;
+    private Double rating;
+    private String color;
     private Bitmap map;
 
     public DataInfoVenue() {
@@ -24,19 +24,19 @@ public class DataInfoVenue implements IDataDetailVenue {
         photoItems = new ArrayList<>();
     }
 
-    public double getRating() {
+    public Double getRating() {
         return rating;
     }
 
-    public void setRating(double rating) {
+    public void setRating(Double rating) {
         this.rating = rating;
     }
 
-    public int getColor() {
+    public String getColor() {
         return color;
     }
 
-    public void setColor(int color) {
+    public void setColor(String color) {
         this.color = color;
     }
 

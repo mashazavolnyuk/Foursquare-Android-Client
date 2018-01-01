@@ -3,7 +3,6 @@ package com.mashazavolnyuk.client.fragments;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
-import android.app.ProgressDialog;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -30,18 +29,16 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.gson.Gson;
-import com.mashazavolnyuk.client.ProjectConstants;
+import com.mashazavolnyuk.client.Constants;
+import com.mashazavolnyuk.client.data.PlaceItem;
 import com.mashazavolnyuk.client.data.locationUser.BaseLocation;
-import com.mashazavolnyuk.client.data.locationUser.SelectedLocation;
-import com.mashazavolnyuk.client.data.locationUser.UserLocation;
 import com.mashazavolnyuk.client.filter.FilterParams;
 import com.mashazavolnyuk.client.MainActivity;
 import com.mashazavolnyuk.client.R;
 import com.mashazavolnyuk.client.adapters.IListPlacesOnClickListener;
 import com.mashazavolnyuk.client.adapters.ListPlacesAdapter;
-import com.mashazavolnyuk.client.data.Item;
 import com.mashazavolnyuk.client.utils.GeocoderUtil;
-import com.mashazavolnyuk.client.viewmodels.DetailAboutPlaceViewModel;
+import com.mashazavolnyuk.client.viewmodels.PlaceViewModel;
 import com.mashazavolnyuk.client.viewmodels.ListPlaceViewModel;
 
 import java.util.ArrayList;
@@ -62,12 +59,12 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
     RecyclerView recyclerViewPlaces;
     @BindView(R.id.swipeRefreshLayout)
     SwipeRefreshLayout swipeRefreshLayout;
-    private DetailAboutPlaceViewModel detailAboutPlaceViewMode;
+    private PlaceViewModel placeViewMode;
     private ListPlaceViewModel listPlaceViewMode;
     private LocationManager locationManager;
     private ListPlacesAdapter listPlacesAdapter;
     private SharedPreferences preferences;
-    private List<Item> listPlaces;
+    private List<PlaceItem> listPlaces;
     private BaseLocation baseLocation;
     private Unbinder unbinder;
 
@@ -79,17 +76,23 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
         View view = inflater.inflate(R.layout.fragment_main_list, container, false);
         unbinder = ButterKnife.bind(this, view);
         setHasOptionsMenu(true);
-        preferences = getActivity().getSharedPreferences("Filters", Context.MODE_PRIVATE);
+        preferences = getActivity().getSharedPreferences(Constants.PREF_FILTERS, Context.MODE_PRIVATE);
         listPlaceViewMode = ViewModelProviders.of((FragmentActivity) getActivity()).get(
                 ListPlaceViewModel.class);
-        detailAboutPlaceViewMode = ViewModelProviders.of((FragmentActivity) getActivity()).get(
-                DetailAboutPlaceViewModel.class);
+        placeViewMode = ViewModelProviders.of((FragmentActivity) getActivity()).get(
+                PlaceViewModel.class);
+
+        listPlacesAdapter = new ListPlacesAdapter(getActivity(), this);
+        recyclerViewPlaces.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerViewPlaces.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
+        recyclerViewPlaces.setAdapter(listPlacesAdapter);
+
         listPlaces = listPlaceViewMode.getCache();
         baseLocation = getBaseLocation();
         setListeners();
-        showDialog("Please wait", ProgressDialog.STYLE_SPINNER, false);
+        showWaitDialog();
         if (listPlaces != null && listPlaces.size() > 0) {
-            fillData(listPlaces);
+            updateData(listPlaces);
         } else {
             tryStartFindLocation();
         }
@@ -105,11 +108,11 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
         String userLocationModel = preferences.getString(FilterParams.USER_LOCATION, "");
         String selectedLocationModel = preferences.getString(FilterParams.SELECTED_LOCATION, "");
         if (!selectedLocationModel.isEmpty()) {
-            baseLocation = gson.fromJson(selectedLocationModel, SelectedLocation.class);
+            baseLocation = gson.fromJson(selectedLocationModel, BaseLocation.class);
             return baseLocation;
         } else {
             if (!userLocationModel.isEmpty()) {
-                baseLocation = gson.fromJson(userLocationModel, UserLocation.class);
+                baseLocation = gson.fromJson(userLocationModel, BaseLocation.class);
                 return baseLocation;
             }
         }
@@ -168,7 +171,7 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
                 this.onLocationChanged(location);
             } else {
                 hideDialog();
-                showToast("Please enable GPS and try again");
+                showToast(getString(R.string.text_enable_gps));
             }
         }
     }
@@ -192,7 +195,7 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
     @Override
     public void onLocationChanged(Location location) {
         saveLocation(location);
-        loadPlacesByLocation(location.getLatitude(), location.getLongitude(), ProjectConstants.DEFAULT_RADIUS);
+        loadPlacesByLocation(location.getLatitude(), location.getLongitude(), Constants.DEFAULT_RADIUS);
         locationManager.removeUpdates(this);
     }
 
@@ -201,7 +204,7 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
         boolean isSortByRelevance = preferences.getBoolean(FilterParams.SORT_BY_RELEVANCE, true);
         listPlaceViewMode.loadGroups(latitude, longitude, !isSortByRelevance, listPricesFilter, radius, data -> {
             listPlaces = data;
-            fillData(listPlaces);
+            updateData(listPlaces);
             swipeRefreshLayout.setRefreshing(false);
         });
     }
@@ -233,7 +236,7 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
     private void saveLocation(Location location) {
         String address = GeocoderUtil.getAddressByLocation(getActivity().getApplication(), location.getLatitude(),
                 location.getLongitude());
-        UserLocation userLocation = new UserLocation();
+        BaseLocation userLocation = new BaseLocation();
         userLocation.setLatitude(location.getLatitude());
         userLocation.setLongitude(location.getLongitude());
         userLocation.setAddress(address);
@@ -321,11 +324,8 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
         }
     }
 
-    private void fillData(List<Item> listPlaces) {
-        listPlacesAdapter = new ListPlacesAdapter(getActivity(), listPlaces, this);
-        recyclerViewPlaces.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerViewPlaces.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
-        recyclerViewPlaces.setAdapter(listPlacesAdapter);
+    private void updateData(List<PlaceItem> listPlaces) {
+        listPlacesAdapter.updateData(listPlaces);
         hideDialog();
     }
 
@@ -342,18 +342,18 @@ public class MainListFragment extends BaseFragment implements SearchView.OnQuery
     }
 
     @Override
-    public void setItem(Item item) {
-        detailAboutPlaceViewMode.select(item);
+    public void setPlaceItem(PlaceItem placeItem) {
+        placeViewMode.setSelectedPlace(placeItem);
         ((MainActivity) getActivity()).goToAboutSelectedPlace();
     }
 
     private void filterPlace(CharSequence constraint) {
         if (constraint != null && constraint.length() > 0) {
-            List<Item> filterList = new ArrayList<>();
-            List<Item> items = listPlaces;
-            for (int i = 0; i < items.size(); i++) {
-                if ((items.get(i).getVenue().getName().toUpperCase()).contains(constraint.toString().toUpperCase()) ||
-                        (items.get(i).getVenue().getCategories().get(0).getShortName().toUpperCase()).contains(constraint.toString().toUpperCase())
+            List<PlaceItem> filterList = new ArrayList<>();
+            List<PlaceItem> placeItems = listPlaces;
+            for (int i = 0; i < placeItems.size(); i++) {
+                if ((placeItems.get(i).getVenue().getName().toUpperCase()).contains(constraint.toString().toUpperCase()) ||
+                        (placeItems.get(i).getVenue().getCategories().get(0).getShortName().toUpperCase()).contains(constraint.toString().toUpperCase())
                         ) {
                     filterList.add(listPlaces.get(i));
                 }

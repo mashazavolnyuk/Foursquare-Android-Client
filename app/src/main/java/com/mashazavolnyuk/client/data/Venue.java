@@ -27,9 +27,6 @@ public class Venue  {
     @SerializedName("verified")
     @Expose
     private Boolean verified;
-    @SerializedName("stats")
-    @Expose
-    private Stats stats;
     @SerializedName("url")
     @Expose
     private String url;
@@ -60,9 +57,6 @@ public class Venue  {
     @SerializedName("hereNow")
     @Expose
     private HereNow hereNow;
-    @SerializedName("featuredPhotos")
-    @Expose
-    private FeaturedPhotos featuredPhotos;
 
     protected Venue(Parcel in) {
         id = in.readString();
@@ -132,14 +126,6 @@ public class Venue  {
 
     public void setVerified(Boolean verified) {
         this.verified = verified;
-    }
-
-    public Stats getStats() {
-        return stats;
-    }
-
-    public void setStats(Stats stats) {
-        this.stats = stats;
     }
 
     public String getUrl() {
@@ -220,13 +206,5 @@ public class Venue  {
 
     public void setHereNow(HereNow hereNow) {
         this.hereNow = hereNow;
-    }
-
-    public FeaturedPhotos getFeaturedPhotos() {
-        return featuredPhotos;
-    }
-
-    public void setFeaturedPhotos(FeaturedPhotos featuredPhotos) {
-        this.featuredPhotos = featuredPhotos;
     }
 }

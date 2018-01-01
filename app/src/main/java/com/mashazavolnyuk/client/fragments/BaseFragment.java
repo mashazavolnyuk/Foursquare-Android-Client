@@ -6,10 +6,11 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
 
+import com.mashazavolnyuk.client.R;
+
 public class BaseFragment extends Fragment {
 
     protected ProgressDialog dialog;
-    protected static String TAG;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -17,17 +18,13 @@ public class BaseFragment extends Fragment {
         setRetainInstance(true);
     }
 
-    public void showDialog(String mess, int ProgressStyle, boolean cancel) {
+    public void showWaitDialog() {
         if (dialog == null) {
             dialog = new ProgressDialog(getActivity());
-            dialog.setProgressStyle(ProgressStyle);
-            dialog.setCancelable(cancel);
+            dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            dialog.setCancelable(false);
         }
-        if (mess == null || mess.isEmpty()) {
-            dialog.setMessage("Please wait");
-        } else {
-            dialog.setMessage(mess);
-        }
+        dialog.setMessage(getString(R.string.text_wait));
         dialog.show();
     }
 
@@ -39,23 +36,14 @@ public class BaseFragment extends Fragment {
         }
     }
 
-
     public void hideDialog() {
         if (dialog != null) {
             dialog.dismiss();
         }
     }
 
-    public void showToast(String mess, int TYPE) {
-        Toast.makeText(getActivity(), mess, TYPE).show();
-    }
-
     public void showToast(String mess) {
         Toast.makeText(getActivity(), mess, Toast.LENGTH_SHORT).show();
-    }
-
-    public void setTagName(String tagName) {
-        TAG = tagName;
     }
 
     protected ProgressDialog getDialog() {

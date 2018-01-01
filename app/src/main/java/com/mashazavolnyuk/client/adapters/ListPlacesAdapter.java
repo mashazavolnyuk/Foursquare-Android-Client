@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import com.mashazavolnyuk.client.R;
 import com.mashazavolnyuk.client.customview.RatingView;
-import com.mashazavolnyuk.client.data.Item;
+import com.mashazavolnyuk.client.data.PlaceItem;
 import com.mashazavolnyuk.client.data.Item__;
 import com.mashazavolnyuk.client.data.Price;
 import com.mashazavolnyuk.client.data.Venue;
@@ -29,16 +29,30 @@ import butterknife.ButterKnife;
 
 public class ListPlacesAdapter extends RecyclerView.Adapter<ListPlacesAdapter.HolderAdapter> {
 
+    private static final int SMALL_IMAGE_SIZE = 100;     //following foursquare API
+    private static final int BIG_IMAGE_SIZE = 300;
+    private static final int SMALL_IMAGE_LIMIT = 150;
     private Context context;
-    private List<Item> data;
+    private List<PlaceItem> data;
     private IListPlacesOnClickListener iListPlacesOnClickListener;
+    private String imageSizeStr;
 
-    public ListPlacesAdapter(Context context, List<Item> data, IListPlacesOnClickListener iListPlacesOnClickListener) {
+    public ListPlacesAdapter(Context context, IListPlacesOnClickListener iListPlacesOnClickListener) {
         this.context = context;
-        this.data = data;
         this.iListPlacesOnClickListener = iListPlacesOnClickListener;
+        int imageSize = (int) context.getResources().getDimension(R.dimen.image_wight_list_default);
+        if (imageSize < SMALL_IMAGE_LIMIT) {
+            imageSize = SMALL_IMAGE_SIZE;
+        } else {
+            imageSize = BIG_IMAGE_SIZE;
+        }
+        imageSizeStr = String.valueOf(imageSize) + "x" + String.valueOf(imageSize);
     }
 
+    public void updateData(List<PlaceItem> data) {
+        this.data = data;
+        notifyDataSetChanged();
+    }
 
     @Override
     public ListPlacesAdapter.HolderAdapter onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -49,29 +63,30 @@ public class ListPlacesAdapter extends RecyclerView.Adapter<ListPlacesAdapter.Ho
 
     @Override
     public void onBindViewHolder(HolderAdapter holder, int position) {
-        final Item item = data.get(position);
-        Venue venue = item.getVenue();
+        final PlaceItem placeItem = data.get(position);
+        Venue venue = placeItem.getVenue();
         Price price = venue.getPrice();
         String valuePrice = price != null ? ConverterForPrice.getFormatMessageByPrice(price) : "";
-        Item__ itemPhoto = venue.getPhotos().getGroups().get(0).getItems().get(0);
-        if (itemPhoto != null) {
-            String path = itemPhoto.getPrefix() + "500x500" + itemPhoto.getSuffix();
+        if(venue.getPhotos() != null && venue.getPhotos().getGroups() != null && venue.getPhotos().getGroups().size() > 0 &&
+                venue.getPhotos().getGroups().get(0).getItems() != null &&
+                venue.getPhotos().getGroups().get(0).getItems().size() > 0 &&
+                venue.getPhotos().getGroups().get(0).getItems().get(0) != null) {
+            Item__ itemPhoto = venue.getPhotos().getGroups().get(0).getItems().get(0);
+            String path = itemPhoto.getPrefix() + imageSizeStr + itemPhoto.getSuffix();
             Uri uri = Uri.parse(path);
             Picasso.with(context).load(uri).error(R.drawable.ic_error_image).into(holder.photoPlace);
+        } else {
+            holder.photoPlace.setImageResource(R.drawable.ic_photo);
         }
         holder.firstPositionText.setText(venue.getName());
-        String valueSecondPostion = venue.getCategories().get(0).getName() + "," + valuePrice;
+        String valueSecondPostion = venue.getCategories().get(0).getName() + ", " + valuePrice;
         holder.secondPositionText.setText(valueSecondPostion);
         String kmValue = getStringDistanceByValue(venue.getLocation().getDistance());
-        String address = venue.getLocation().getAddress();
-        String valueForThirdPosition = kmValue + "," + address;
+        String address = venue.getLocation().getAddress() != null ? venue.getLocation().getAddress() : "";
+        String valueForThirdPosition = kmValue + ", " + address;
         holder.thirdPositionText.setText(valueForThirdPosition);
-        holder.rating.setText(String.format(Locale.ENGLISH, "%.1f", venue.getRating()));
-        if (venue.getRatingColor() != null) {
-            int color = Color.parseColor("#" + venue.getRatingColor());
-            holder.rating.setBackgroundShapeColor(color);
-        }
-        holder.root.setOnClickListener(view -> iListPlacesOnClickListener.setItem(item));
+        holder.rating.setRating(venue.getRating(), venue.getRatingColor());
+        holder.root.setOnClickListener(view -> iListPlacesOnClickListener.setPlaceItem(placeItem));
     }
 
     private String getStringDistanceByValue(Integer value) {
@@ -79,7 +94,7 @@ public class ListPlacesAdapter extends RecyclerView.Adapter<ListPlacesAdapter.Ho
         return String.format(Locale.ENGLISH, "%.2f km", distance);
     }
 
-    public void setNewData(List<Item> newData) {
+    public void setNewData(List<PlaceItem> newData) {
         data = newData;
         notifyDataSetChanged();
     }

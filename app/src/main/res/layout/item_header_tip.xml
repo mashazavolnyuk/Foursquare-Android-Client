@@ -3,11 +3,17 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp">
+    android:paddingTop="8dp"
+    android:paddingRight="8dp"
+    android:paddingEnd="8dp"
+    android:paddingLeft="8dp"
+    android:paddingStart="8dp"
+    android:paddingBottom="4dp"
+    >
 
     <TextView
         android:id="@+id/headerTip"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="@string/header_tips"/>
 </LinearLayout>

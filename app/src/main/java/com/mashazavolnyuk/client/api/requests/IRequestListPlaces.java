@@ -18,7 +18,7 @@ public interface IRequestListPlaces {
                                            @Query("radius") String radius
     );
 
-    @GET("venues/{id}/photos?v=20182412")
+    @GET("venues/{id}/photos?v=20182412&limit=3")
     Call<String> getDetailedPhotosById(@Path("id") String idVenue,
                                        @Query("client_id") String clientID,
                                        @Query("client_secret") String clientSecret

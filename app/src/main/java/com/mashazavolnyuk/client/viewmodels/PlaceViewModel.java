@@ -4,35 +4,33 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.graphics.Bitmap;
-import android.util.Log;
 
-import com.mashazavolnyuk.client.data.Item;
+import com.mashazavolnyuk.client.data.PlaceItem;
 import com.mashazavolnyuk.client.data.Venue;
 import com.mashazavolnyuk.client.data.photos.PhotoItem;
 import com.mashazavolnyuk.client.data.tips.DetailTip;
-import com.mashazavolnyuk.client.data.tips.TipElement;
 import com.mashazavolnyuk.client.repositories.CallbackResponse;
-import com.mashazavolnyuk.client.repositories.DetailAboutPlaceRepository;
+import com.mashazavolnyuk.client.repositories.PlaceRepository;
 
 import java.util.List;
 
-public class DetailAboutPlaceViewModel extends ViewModel {
+public class PlaceViewModel extends ViewModel {
 
-    private final MutableLiveData<Item> selected = new MutableLiveData<>();
+    private final MutableLiveData<PlaceItem> selectedPlace = new MutableLiveData<>();
     private MutableLiveData<List<PhotoItem>> photoResponseDataMutableLiveData =
             new MutableLiveData<>();
 
-    public void select(Item item) {
-        selected.setValue(item);
+    public void setSelectedPlace(PlaceItem placeItem) {
+        selectedPlace.setValue(placeItem);
     }
 
-    public LiveData<Item> getSelected() {
-        return selected;
+    public LiveData<PlaceItem> getSelectedPlace() {
+        return selectedPlace;
     }
 
     public void getPhotoByIdVenue(String id, CallbackResponse<List<PhotoItem>> callbackResponse) {
-        DetailAboutPlaceRepository detailAboutPlaceRepository = new DetailAboutPlaceRepository();
-        detailAboutPlaceRepository.getDetailedPhotoById(id, response -> {
+        PlaceRepository placeRepository = new PlaceRepository();
+        placeRepository.getDetailedPhotoById(id, response -> {
             photoResponseDataMutableLiveData.setValue(response);
             callbackResponse.response(response);
         });
@@ -40,8 +38,8 @@ public class DetailAboutPlaceViewModel extends ViewModel {
     }
 
     public void getTipsByIdVenue(String id, CallbackResponse<List<DetailTip>> callbackResponse) {
-        DetailAboutPlaceRepository detailAboutPlaceRepository = new DetailAboutPlaceRepository();
-        detailAboutPlaceRepository.getDetailedTipsById(id, new CallbackResponse<List<DetailTip>>() {
+        PlaceRepository placeRepository = new PlaceRepository();
+        placeRepository.getDetailedTipsById(id, new CallbackResponse<List<DetailTip>>() {
             @Override
             public void response(List<DetailTip> response) {
                 callbackResponse.response(response);
@@ -50,7 +48,7 @@ public class DetailAboutPlaceViewModel extends ViewModel {
     }
 
     public void loadStaticGoogleMap(Venue venue, CallbackResponse<Bitmap> bitmapCallbackResponse) {
-        DetailAboutPlaceRepository detailAboutPlaceRepository = new DetailAboutPlaceRepository();
-        detailAboutPlaceRepository.loadStaticGoogleMap(venue, bitmapCallbackResponse);
+        PlaceRepository placeRepository = new PlaceRepository();
+        placeRepository.loadStaticGoogleMap(venue, bitmapCallbackResponse);
     }
 }

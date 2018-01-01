@@ -7,7 +7,7 @@
     <include
         layout="@layout/gallery_venue"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="100dp" />
 
     <View
         android:layout_width="match_parent"
@@ -19,7 +19,8 @@
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="-12dp"
+        android:layout_marginTop="-15dp"
+        android:gravity="center"
         android:background="@drawable/ic_rating_style_bg"
         android:textAlignment="center"
         android:textColor="@color/white" />
@@ -76,13 +77,19 @@
     <TextView
         android:id="@+id/locationVenue"
         android:paddingLeft="16dp"
+        android:paddingStart="16dp"
         android:paddingRight="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <include
-        layout="@layout/map_venue"
+    <ImageView
+        android:id="@+id/mapVenue"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/gallery"
+        android:scaleType="centerCrop"/>
 
 </LinearLayout>

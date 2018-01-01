@@ -25,7 +25,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class DetailVenueAdapter extends RecyclerView.Adapter<DetailVenueAdapter.ViewHolder> {
+public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.ViewHolder> {
 
     private Context context;
     private List<IDataDetailVenue> data;
@@ -34,7 +34,7 @@ public class DetailVenueAdapter extends RecyclerView.Adapter<DetailVenueAdapter.
     private static final int ITEM_HEADER_TIP = 1;
     private static final int ITEM_TYPE_TIP = 2;
 
-    public DetailVenueAdapter(Context context, List<IDataDetailVenue> data) {
+    public PlaceAdapter(Context context, List<IDataDetailVenue> data) {
         this.context = context;
         this.data = data;
     }
@@ -97,33 +97,33 @@ public class DetailVenueAdapter extends RecyclerView.Adapter<DetailVenueAdapter.
                 infoHolder.firstPositionText.setText(dataInfoVenue.getListInfo().get(0));
                 infoHolder.secondPositionText.setText(dataInfoVenue.getListInfo().get(1));
                 infoHolder.thirdPositionText.setText(dataInfoVenue.getListInfo().get(2));
-                infoHolder.ratingView.setBackgroundShapeColor(dataInfoVenue.getColor());
+                infoHolder.ratingView.setRating(dataInfoVenue.getRating(), dataInfoVenue.getColor());
                 Price price = dataInfoVenue.getPrice();
                 String valuePrice = price != null ? ConverterForPrice.getFormatMessageByPrice(price) : "";
                 infoHolder.textCurrency.setText(valuePrice);
-                String rating = String.valueOf(dataInfoVenue.getRating());
-                infoHolder.ratingView.setText(rating);
+
                 infoHolder.location.setText(dataInfoVenue.getLocation());
                 infoHolder.mapView.setImageBitmap(dataInfoVenue.getMap());
                 break;
 
             case ITEM_HEADER_TIP:
-                HeaderTip headerTip = (HeaderTip) data.get(position);
-                TipHeaderHolder tipHeaderHolder = (TipHeaderHolder) holder;
-                tipHeaderHolder.headerTip.setText(headerTip.getHeader());
                 break;
 
             case ITEM_TYPE_TIP:
                 DetailTip tip = (DetailTip) data.get(position);
                 TipHolder tipHolder = (TipHolder) holder;
                 tipHolder.messageUser.setText(tip.getText());
-                String userName = tip.getUser().getFirstName() + " " + tip.getUser().getLastName();
+                String lastName = tip.getUser().getLastName() != null ? tip.getUser().getLastName() : "";
+                String firstName = tip.getUser().getFirstName() != null ? tip.getUser().getFirstName() : "";
+                String userName = firstName + " " + lastName;
                 tipHolder.nameUser.setText(userName);
-                decideIsShowLikes(tipHolder, tip);
+                showLikes(tipHolder, tip);
                 String photoUrl = tip.getPhotourl();
                 if (photoUrl != null) {
                     uri = Uri.parse(photoUrl);
                     Picasso.with(context).load(uri).error(R.drawable.ic_error_image).into(tipHolder.photoUser);
+                } else {
+                    tipHolder.photoUser.setImageResource(R.drawable.ic_photo);
                 }
                 break;
         }
@@ -145,24 +145,23 @@ public class DetailVenueAdapter extends RecyclerView.Adapter<DetailVenueAdapter.
                         imageView = infoHolder.thirdPopularPhoto;
                         break;
                 }
-                String firstUri = photoItem.get(index).getPrefix() + "640x400" + photoItem.get(index).getSuffix();
-                uri = Uri.parse(firstUri);
-                Picasso.with(context).load(uri).error(R.drawable.ic_error_image).into(imageView);
+                if(photoItem.size() > index) {
+                    String firstUri = photoItem.get(index).getPrefix() + "640x400" + photoItem.get(index).getSuffix();
+                    uri = Uri.parse(firstUri);
+                    Picasso.with(context).load(uri).error(R.drawable.ic_error_image).into(imageView);
+                }
             }
         }
     }
 
-    private void decideIsShowLikes(TipHolder holder, DetailTip tip) {
-        if (tip.getLikes() == null) {
+    private void showLikes(TipHolder holder, DetailTip tip) {
+        if (tip.getLikes() == null || tip.getLikes().getCount() == null || tip.getLikes().getCount() == 0) {
             holder.imageLikes.setVisibility(View.INVISIBLE);
+            holder.countLike.setText("");
         } else {
-            Integer countLikes = tip.getLikes().getCount() != null ? tip.getLikes().getCount() : 0;
-            if (countLikes > 0) {
-                holder.imageLikes.setVisibility(View.VISIBLE);
-                holder.countLike.setText(String.format("%s", countLikes));
-            } else {
-                holder.imageLikes.setVisibility(View.INVISIBLE);
-            }
+            Integer countLikes = tip.getLikes().getCount();
+            holder.imageLikes.setVisibility(View.VISIBLE);
+            holder.countLike.setText(String.format("%s", countLikes));
         }
     }
 
@@ -229,8 +228,6 @@ public class DetailVenueAdapter extends RecyclerView.Adapter<DetailVenueAdapter.
         TextView messageUser;
         @BindView(R.id.nameUser)
         TextView nameUser;
-        @BindView(R.id.dataMessage)
-        TextView dataMessage;
         @BindView(R.id.countLike)
         TextView countLike;
         @BindView(R.id.imageLikes)

@@ -13,13 +13,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.mashazavolnyuk.client.R;
-import com.mashazavolnyuk.client.adapters.DetailVenueAdapter;
+import com.mashazavolnyuk.client.adapters.PlaceAdapter;
 import com.mashazavolnyuk.client.data.IDataDetailVenue;
 import com.mashazavolnyuk.client.data.detailedVenue.DataInfoVenue;
-import com.mashazavolnyuk.client.data.Item;
+import com.mashazavolnyuk.client.data.PlaceItem;
 import com.mashazavolnyuk.client.data.Venue;
 import com.mashazavolnyuk.client.data.detailedVenue.HeaderTip;
-import com.mashazavolnyuk.client.viewmodels.DetailAboutPlaceViewModel;
+import com.mashazavolnyuk.client.viewmodels.PlaceViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,16 +29,16 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
 
-public class AboutSelectedPlaceFragment extends BaseFragment {
+public class PlaceFragment extends BaseFragment {
 
     @BindView(R.id.listTips)
     RecyclerView recyclerViewTips;
 
     private List<IDataDetailVenue> data;
     private Unbinder unbinder;
-    private Item item;
-    private DetailAboutPlaceViewModel model;
-    private DetailVenueAdapter detailVenueAdapter;
+    private PlaceItem placeItem;
+    private PlaceViewModel model;
+    private PlaceAdapter placeAdapter;
     DataInfoVenue dataInfoVenue;
 
     @Nullable
@@ -48,13 +48,13 @@ public class AboutSelectedPlaceFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_detailed_venue, container, false);
         unbinder = ButterKnife.bind(this, view);
         data = new ArrayList<>();
-        detailVenueAdapter = new DetailVenueAdapter(getActivity(), data);
+        placeAdapter = new PlaceAdapter(getActivity(), data);
         model = ViewModelProviders.of((FragmentActivity)
-                getActivity()).get(DetailAboutPlaceViewModel.class);
-        item = model.getSelected().getValue();
+                getActivity()).get(PlaceViewModel.class);
+        placeItem = model.getSelectedPlace().getValue();
         dataInfoVenue = new DataInfoVenue();
         recyclerViewTips.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerViewTips.setAdapter(detailVenueAdapter);
+        recyclerViewTips.setAdapter(placeAdapter);
         recyclerViewTips.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
         setDefaultValues();
         return view;
@@ -68,7 +68,7 @@ public class AboutSelectedPlaceFragment extends BaseFragment {
 
     private void setDefaultValues() {
         fillAboutPlace();
-        loadStaticGoogleMap(item.getVenue());
+        loadStaticGoogleMap(placeItem.getVenue());
         fillListTips();
         fillGallery();
     }
@@ -76,36 +76,35 @@ public class AboutSelectedPlaceFragment extends BaseFragment {
     private void loadStaticGoogleMap(Venue venue) {
         model.loadStaticGoogleMap(venue, map -> {
             dataInfoVenue.setMap(map);
-            detailVenueAdapter.updateItem(0);
+            placeAdapter.updateItem(0);
         });
     }
 
     private void fillGallery() {
-        Venue venue = item.getVenue();
+        Venue venue = placeItem.getVenue();
         model.getPhotoByIdVenue(venue.getId(), response -> {
             if (response != null) {
                 dataInfoVenue.setPhotoItems(response);
-                detailVenueAdapter.updateItem(0);
+                placeAdapter.updateItem(0);
             }
         });
     }
 
     private void fillListTips() {
-        Venue venue = item.getVenue();
+        Venue venue = placeItem.getVenue();
         model.getTipsByIdVenue(venue.getId(), response -> {
             data.add(new HeaderTip());
             data.addAll(response);
-            detailVenueAdapter.updateData(data);
+            placeAdapter.updateData(data);
         });
     }
 
     private void fillAboutPlace() {
-        Venue venue = item.getVenue();
+        Venue venue = placeItem.getVenue();
         dataInfoVenue.addInfo(venue.getName());
         dataInfoVenue.addInfo(venue.getCategories().get(0).getShortName());
         dataInfoVenue.addInfo(venue.getContact().getFormattedPhone());
-        int color = Color.parseColor("#" + venue.getRatingColor());
-        dataInfoVenue.setColor(color);
+        dataInfoVenue.setColor(venue.getRatingColor());
         dataInfoVenue.setRating(venue.getRating());
         dataInfoVenue.setLocation(venue.getLocation().getAddress());
         data.add(dataInfoVenue);

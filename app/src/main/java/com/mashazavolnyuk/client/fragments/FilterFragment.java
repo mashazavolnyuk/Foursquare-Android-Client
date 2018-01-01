@@ -3,7 +3,6 @@ package com.mashazavolnyuk.client.fragments;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -17,10 +16,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.mashazavolnyuk.client.Constants;
 import com.mashazavolnyuk.client.MainActivity;
 import com.mashazavolnyuk.client.R;
-import com.mashazavolnyuk.client.data.locationUser.SelectedLocation;
-import com.mashazavolnyuk.client.data.locationUser.UserLocation;
+import com.mashazavolnyuk.client.data.locationUser.BaseLocation;
 import com.mashazavolnyuk.client.filter.FilterParams;
 
 import butterknife.BindView;
@@ -52,8 +51,8 @@ public class FilterFragment extends BaseFragment {
     boolean isAvailableLevel3;
     boolean isAvailableLevel4;
     boolean isSortByRelevance;
-    UserLocation userLocation;
-    SelectedLocation selectedLocation;
+    BaseLocation userLocation;
+    BaseLocation selectedLocation;
     TextView hereNow;
 
     SharedPreferences preferences;
@@ -69,7 +68,7 @@ public class FilterFragment extends BaseFragment {
         unbinder = ButterKnife.bind(this, view);
         setHasOptionsMenu(true);
         hereNow = view.findViewById(R.id.hereNow);
-        preferences = getActivity().getSharedPreferences("Filters", Context.MODE_PRIVATE);
+        preferences = getActivity().getSharedPreferences(Constants.PREF_FILTERS, Context.MODE_PRIVATE);
         initValueFromPreference();
         updateUIAccordingToFilterSettings();
         setListeners();
@@ -87,8 +86,8 @@ public class FilterFragment extends BaseFragment {
         Gson gson = new Gson();
         String userLocationModel = preferences.getString(FilterParams.USER_LOCATION, "");
         String selectedLocationModel = preferences.getString(FilterParams.SELECTED_LOCATION, "");
-        this.userLocation = gson.fromJson(userLocationModel, UserLocation.class);
-        selectedLocation = gson.fromJson(selectedLocationModel, SelectedLocation.class);
+        userLocation = gson.fromJson(userLocationModel, BaseLocation.class);
+        selectedLocation = gson.fromJson(selectedLocationModel, BaseLocation.class);
     }
 
     @Override
@@ -100,46 +99,30 @@ public class FilterFragment extends BaseFragment {
     private void setListeners() {
         sortByDistance.setOnClickListener(view -> {
             isSortByRelevance = false;
-            highlightActiveElement(sortByDistance);
-            setDefaultStyleElement(sortByRelevance);
+            highlightActiveElement(sortByDistance, true);
+            highlightActiveElement(sortByRelevance, false);
             applyChangeForLevel(5, sortByRelevance); //one boolean for two element
         });
         sortByRelevance.setOnClickListener(view -> {
-            highlightActiveElement(sortByRelevance);
-            setDefaultStyleElement(sortByDistance);
+            highlightActiveElement(sortByRelevance, true);
+            highlightActiveElement(sortByDistance, false);
             isSortByRelevance = true;
             applyChangeForLevel(5, sortByRelevance);
         });
         filterByExpensiveLevel1.setOnClickListener(view -> {
-            if (!isAvailableLevel1) {
-                isAvailableLevel1 = true;
-            } else {
-                isAvailableLevel1 = false;
-            }
+            isAvailableLevel1 = !isAvailableLevel1;
             applyChangeForLevel(1, filterByExpensiveLevel1);
         });
         filterByExpensiveLevel2.setOnClickListener(view -> {
-            if (!isAvailableLevel2) {
-                isAvailableLevel2 = true;
-            } else {
-                isAvailableLevel2 = false;
-            }
+            isAvailableLevel2 = !isAvailableLevel2;
             applyChangeForLevel(2, filterByExpensiveLevel2);
         });
         filterByExpensiveLevel3.setOnClickListener(view -> {
-            if (!isAvailableLevel3) {
-                isAvailableLevel3 = true;
-            } else {
-                isAvailableLevel3 = false;
-            }
+            isAvailableLevel3 = !isAvailableLevel3;
             applyChangeForLevel(3, filterByExpensiveLevel3);
         });
         filterByExpensiveLevel4.setOnClickListener(view -> {
-            if (!isAvailableLevel4) {
-                isAvailableLevel4 = true;
-            } else {
-                isAvailableLevel4 = false;
-            }
+            isAvailableLevel4 = !isAvailableLevel4;
             applyChangeForLevel(4, filterByExpensiveLevel4);
 
         });
@@ -170,11 +153,7 @@ public class FilterFragment extends BaseFragment {
                 filterParams = FilterParams.SORT_BY_RELEVANCE;
                 break;
         }
-        if (chooseLevel) {
-            highlightActiveElement(button);
-        } else {
-            setDefaultStyleElement(button);
-        }
+        highlightActiveElement(button, chooseLevel);
         saveParamInSettings(filterParams, chooseLevel);
     }
 
@@ -230,11 +209,11 @@ public class FilterFragment extends BaseFragment {
 
     private void updateUIAccordingToFilterSettings() {
         if (isSortByRelevance) {
-            highlightActiveElement(sortByRelevance);
-            setDefaultStyleElement(sortByDistance);
+            highlightActiveElement(sortByRelevance, true);
+            highlightActiveElement(sortByDistance, false);
         } else {
-            highlightActiveElement(sortByDistance);
-            setDefaultStyleElement(sortByRelevance);
+            highlightActiveElement(sortByDistance, true);
+            highlightActiveElement(sortByRelevance, false);
         }
         applyChangeForLevel(1, filterByExpensiveLevel1);
         applyChangeForLevel(2, filterByExpensiveLevel2);
@@ -249,20 +228,13 @@ public class FilterFragment extends BaseFragment {
         }
     }
 
-    private void highlightActiveElement(Button button) {
-        Resources resources = getResources();
-        int colorBackground = resources.getColor(R.color.colorPrimary);
-        int colorText = resources.getColor(R.color.white);
-        button.setBackgroundColor(colorBackground);
-        button.setTextColor(colorText);
+    private void highlightActiveElement(Button button, boolean isHighlighted) {
+        if (isHighlighted) {
+            button.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+            button.setTextColor(getResources().getColor(R.color.white));
+        } else {
+            button.setBackgroundColor(getResources().getColor(R.color.white));
+            button.setTextColor(getResources().getColor(R.color.colorText));
+        }
     }
-
-    private void setDefaultStyleElement(Button button) {
-        Resources resources = getResources();
-        int colorBackground = resources.getColor(R.color.white);
-        int colorText = resources.getColor(R.color.colorText);
-        button.setBackgroundColor(colorBackground);
-        button.setTextColor(colorText);
-    }
-
 }

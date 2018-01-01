@@ -16,7 +16,7 @@ public class Group {
     private String name;
     @SerializedName("items")
     @Expose
-    private List<Item> items = null;
+    private List<PlaceItem> placeItems = null;
 
     public String getType() {
         return type;
@@ -34,12 +34,12 @@ public class Group {
         this.name = name;
     }
 
-    public List<Item> getItems() {
-        return items;
+    public List<PlaceItem> getPlaceItems() {
+        return placeItems;
     }
 
-    public void setItems(List<Item> items) {
-        this.items = items;
+    public void setPlaceItems(List<PlaceItem> placeItems) {
+        this.placeItems = placeItems;
     }
 
 

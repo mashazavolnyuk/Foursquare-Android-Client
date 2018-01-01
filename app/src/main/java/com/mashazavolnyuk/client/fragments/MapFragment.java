@@ -24,11 +24,9 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
-import com.mashazavolnyuk.client.ProjectConstants;
+import com.mashazavolnyuk.client.Constants;
 import com.mashazavolnyuk.client.R;
 import com.mashazavolnyuk.client.data.locationUser.BaseLocation;
-import com.mashazavolnyuk.client.data.locationUser.SelectedLocation;
-import com.mashazavolnyuk.client.data.locationUser.UserLocation;
 import com.mashazavolnyuk.client.filter.FilterParams;
 import com.mashazavolnyuk.client.utils.ConverterForZoom;
 import com.mashazavolnyuk.client.utils.GeocoderUtil;
@@ -60,7 +58,7 @@ public class MapFragment extends BaseFragment implements OnMapReadyCallback,
         View view = inflater.inflate(R.layout.fragment_map, container, false);
         unbinder = ButterKnife.bind(this, view);
         setHasOptionsMenu(true);
-        preferences = getActivity().getSharedPreferences("Filters", Context.MODE_PRIVATE);
+        preferences = getActivity().getSharedPreferences(Constants.PREF_FILTERS, Context.MODE_PRIVATE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             zoomLevelMap.setMin(0);
         }
@@ -155,15 +153,15 @@ public class MapFragment extends BaseFragment implements OnMapReadyCallback,
         String userLocationModel = preferences.getString(FilterParams.USER_LOCATION, "");
         String selectedLocationModel = preferences.getString(FilterParams.SELECTED_LOCATION, "");
         if (!selectedLocationModel.isEmpty()) {
-            baseLocation = gson.fromJson(selectedLocationModel, SelectedLocation.class);
+            baseLocation = gson.fromJson(selectedLocationModel, BaseLocation.class);
             if (baseLocation != null) {
                 return baseLocation;
             } else {
-                baseLocation = gson.fromJson(userLocationModel, UserLocation.class);
+                baseLocation = gson.fromJson(userLocationModel, BaseLocation.class);
                 return baseLocation;
             }
         } else {
-            baseLocation = gson.fromJson(userLocationModel, UserLocation.class);
+            baseLocation = gson.fromJson(userLocationModel, BaseLocation.class);
             return baseLocation;
         }
     }
@@ -188,11 +186,11 @@ public class MapFragment extends BaseFragment implements OnMapReadyCallback,
 
     private void saveLocation(Application context, double latitude, double longitude) {
         String address = GeocoderUtil.getAddressByLocation(context, latitude, longitude);
-        SelectedLocation selectedLocation = new SelectedLocation();
+        BaseLocation selectedLocation = new BaseLocation();
         selectedLocation.setAddress(address);
         selectedLocation.setLatitude(latitude);
         selectedLocation.setLongitude(longitude);
-        selectedLocation.setRadius(radius * ProjectConstants.DEFAULT_RADIUS);
+        selectedLocation.setRadius(radius * Constants.DEFAULT_RADIUS);
         Gson gson = new Gson();
         String jsonModel = gson.toJson(selectedLocation);
         SharedPreferences.Editor editor = preferences.edit();

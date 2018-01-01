@@ -1,7 +1,5 @@
 <resources>
-    <string name="app_name">client</string>
-    <string name="foursquare_client_id">XCVWHEE4CR51K5UHTEOW1KUU4QT3RKBRZLQMG1ZN0APZPWVR</string>
-    <string name="foursquare_client_secret">TJNGAOBUDM1ILMOZJZ5Y02LWJS5SM3QGO55HJMNBEXIYKK0W</string>
+    <string name="app_name">Foursquare client</string>
     <string name="contentDescription">Building</string>
     <string name="search_text">Search</string>
     <string name="filter_text">Filter</string>
@@ -26,4 +24,7 @@
     <string name="reset">reset</string>
     <string name="radius_min">0.5km</string>
     <string name="radius_max">100km</string>
+    <string name="text_wait">Please wait</string>
+    <string name="text_enable_gps">Please enable GPS and try again</string>
+    <string name="header_tips">Tips</string>
 </resources>
