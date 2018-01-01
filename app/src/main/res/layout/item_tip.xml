@@ -40,13 +40,17 @@
                 android:scaleType="centerCrop"
                 android:contentDescription="@string/contentDescription"
                 android:paddingEnd="@dimen/padding_between_element_default"
-                android:paddingStart="@dimen/padding_between_element_default" />
+                android:paddingStart="@dimen/padding_between_element_default"
+                android:src="@drawable/ic_photo"
+                />
 
             <TextView
                 android:id="@+id/nameUser"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
+                android:paddingEnd="@dimen/padding_between_element_default"
+                android:paddingStart="@dimen/padding_between_element_default"
                 android:maxLines="1" />
 
             <TextView
@@ -54,6 +58,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
+                android:paddingEnd="@dimen/padding_between_element_default"
+                android:paddingStart="@dimen/padding_between_element_default"
                 android:maxLines="1" />
         </LinearLayout>
 
