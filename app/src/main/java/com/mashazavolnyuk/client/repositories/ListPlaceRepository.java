@@ -2,11 +2,11 @@ package com.mashazavolnyuk.client.repositories;
 
 import android.arch.lifecycle.MutableLiveData;
 
+import com.mashazavolnyuk.client.ProjectCredentation;
 import com.mashazavolnyuk.client.api.RetrofitClient;
 import com.mashazavolnyuk.client.api.requests.IRequestListPlaces;
 import com.mashazavolnyuk.client.data.Data;
 import com.mashazavolnyuk.client.data.Item;
-import com.mashazavolnyuk.client.data.Response;
 
 import java.util.Collections;
 import java.util.List;
@@ -21,11 +21,10 @@ public class ListPlaceRepository {
                               boolean isSortByDistance, String prices, float radius,
                               final CallbackResponse<List<Item>> callbackResponse) {
         data = new MutableLiveData<>();
+        RetrofitClient.changeApiBaseUrl("https://api.foursquare.com/v2/");
         IRequestListPlaces iRequestListPlaces = RetrofitClient.getRetrofit().create(IRequestListPlaces.class);
-        String id = "XCVWHEE4CR51K5UHTEOW1KUU4QT3RKBRZLQMG1ZN0APZPWVR";
-        String secret = "TJNGAOBUDM1ILMOZJZ5Y02LWJS5SM3QGO55HJMNBEXIYKK0W";
         String isSortByDistanceValue = isSortByDistance ? "1" : "0";
-        iRequestListPlaces.getListRecommendationPlaces(id, secret, "" + latitude + "," + longitude,
+        iRequestListPlaces.getListRecommendationPlaces(ProjectCredentation.ID, ProjectCredentation.SECRET, "" + latitude + "," + longitude,
                 1, isSortByDistanceValue, prices, String.valueOf(radius)).enqueue(new Callback<Data>() {
             @Override
             public void onResponse(retrofit2.Call<Data> call, retrofit2.Response<Data> response) {
@@ -37,7 +36,6 @@ public class ListPlaceRepository {
                     callbackResponse.response(Collections.emptyList());
                 }
             }
-
             @Override
             public void onFailure(retrofit2.Call<Data> call, Throwable t) {
 
